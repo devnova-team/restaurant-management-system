@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Models\Staff;
+use App\Http\Resources\StaffResource;
 use App\Services\AuthService;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
@@ -19,7 +19,10 @@ class AuthController extends Controller
         // Call the AuthService to handle the login logic
         $result = $this->authService->login($validatedData['email'], $validatedData['password']);
 
-        return ApiResponse::success($result, 'تم تسجيل الدخول بنجاح');
+        return ApiResponse::success([
+            'staff' => new StaffResource($result['staff']),
+            'token' => $result['token'],
+        ], 'تم تسجيل الدخول بنجاح');
     }
 
     public function logout(Request $request)
@@ -31,11 +34,12 @@ class AuthController extends Controller
     }
 
     public function refresh(Request $request)
-{
-    $result = $this->authService->refresh($request->user());
+    {
+        $result = $this->authService->refresh($request->user());
 
-    return ApiResponse::success($result, 'تم تجديد الجلسة بنجاح');
-}
-
-
+        return ApiResponse::success( [
+            'staff'=> new StaffResource($result['staff']),
+            'token'=> $result['token']
+        ],'تم تجديد الجلسة بنجاح');
+    }
 }
