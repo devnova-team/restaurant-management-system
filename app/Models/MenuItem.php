@@ -14,6 +14,7 @@ class MenuItem extends Model
     }
 
     // Define the relationship with Ingredient through the pivot table
+    // quantity_required is to specify how much of each ingredient is needed for this menu item
     public function ingredients()
     {
         return $this->belongsToMany(Ingredient::class, 'menu_item_ingredients')->withPivot('quantity_required');

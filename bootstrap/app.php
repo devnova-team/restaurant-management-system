@@ -25,34 +25,34 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Register custom exception renderers for API responses
 
-        $exceptions->render(function (AuthenticationException $e, $request) {
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Unauthenticated.', 401);
+                return ApiResponse::error('غير مصرح، من فضلك سجّل الدخول', 401);
             }
         });
 
-        $exceptions->render(function (AccessDeniedException $e, $request) {
+        $exceptions->render(function (AccessDeniedException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Unauthorized.', 403);
+                return ApiResponse::error('ليس لديك صلاحية لتنفيذ هذا الإجراء', 403);
             }
         });
 
-        $exceptions->render(function (NotFoundHttpException $e, $request) {
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Not Found.', 404);
+                return ApiResponse::error('المورد المطلوب غير موجود', 404);
             }
         });
 
-        $exceptions->render(function (ValidationException $e, $request) {
+        $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error($e->validator->errors()->first(), 422);
+                 return ApiResponse::error($e->validator->errors()->first(), 422);
             }
         });
 
         $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
             if ($request->is('api/*')) {
                 return ApiResponse::error(
-                    $e->getMessage() ?: 'HTTP Error',
+                     $e->getMessage() ?: 'حدث خطأ في الطلب',
                     $e->getStatusCode()
                 );
             }
@@ -60,10 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') && ! config('app.debug')) {
-                return ApiResponse::error(
-                    'Internal Server Error',
-                    500
-                );
+                return ApiResponse::error('حدث خطأ داخلي في السيرفر', 500);
             }
         });
 
