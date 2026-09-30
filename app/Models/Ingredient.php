@@ -13,7 +13,9 @@ class Ingredient extends Model
         return $this->belongsTo(Restaurant::class);
     }
 
-    // Define the relationship with MenuItem through the pivot table
+    /* Define the relationship with MenuItem through the pivot table
+    $pizza->ingredients; // Collection من Ingredients، وكل واحد معاه pivot->quantity_required
+    $cheese->menuItems; // كل الأصناف اللي فيها جبنة */
     public function menuItems()
     {
         return $this->belongsToMany(MenuItem::class, 'menu_item_ingredients')->withPivot('quantity_required');
@@ -23,5 +25,4 @@ class Ingredient extends Model
     {
         return $this->hasMany(OrderItemIngredientUsage::class);
     }
-
 }
