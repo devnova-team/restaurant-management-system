@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Models\Staff;
 use App\Services\AuthService;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
@@ -28,4 +29,13 @@ class AuthController extends Controller
 
         return ApiResponse::success(null, 'تم تسجيل الخروج بنجاح');
     }
+
+    public function refresh(Request $request)
+{
+    $result = $this->authService->refresh($request->user());
+
+    return ApiResponse::success($result, 'تم تجديد الجلسة بنجاح');
+}
+
+
 }
