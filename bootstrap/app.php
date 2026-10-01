@@ -5,9 +5,10 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -25,45 +26,55 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Register custom exception renderers for API responses
 
-        $exceptions->render(function (AuthenticationException $e, $request) {
+        // Handle authentication exceptions for API routes
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Unauthenticated.', 401);
+                return ApiResponse::error('غير مصرح، من فضلك سجّل الدخول', 401);
             }
         });
 
-        $exceptions->render(function (AccessDeniedException $e, $request) {
+        // Handle access denied exceptions for API routes
+        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Unauthorized.', 403);
+                return ApiResponse::error('ليس لديك صلاحية لتنفيذ هذا الإجراء', 403);
             }
         });
 
-        $exceptions->render(function (NotFoundHttpException $e, $request) {
+        // Handle not found exceptions for API routes
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Not Found.', 404);
+                return ApiResponse::error('المورد المطلوب غير موجود', 404);
             }
         });
 
-        $exceptions->render(function (ValidationException $e, $request) {
+        // Handle validation exceptions for API routes
+        $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is('api/*')) {
                 return ApiResponse::error($e->validator->errors()->first(), 422);
             }
         });
 
+        // Handle rate limiting exceptions for API routes
+        $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return ApiResponse::error('عدد محاولات تسجيل الدخول تجاوز الحد المسموح به، يرجى المحاولة لاحقًا', 429);
+            }
+        });
+
+        // Handle generic HTTP exceptions for API routes
         $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
             if ($request->is('api/*')) {
                 return ApiResponse::error(
-                    $e->getMessage() ?: 'HTTP Error',
+                    $e->getMessage() ?: 'حدث خطأ في الطلب',
                     $e->getStatusCode()
                 );
             }
         });
 
+        // Handle any other exceptions for API routes
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') && ! config('app.debug')) {
-                return ApiResponse::error(
-                    'Internal Server Error',
-                    500
-                );
+                return ApiResponse::error('حدث خطأ داخلي في السيرفر', 500);
             }
         });
 

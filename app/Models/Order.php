@@ -16,6 +16,7 @@ class Order extends Model
         'customer_name',
         'customer_phone',
         'delivery_address',
+        'tracking_token',
         'created_by_staff_id',
     ];
 
