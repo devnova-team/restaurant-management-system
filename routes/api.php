@@ -10,3 +10,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1'); // Limit to 5 attempts per minute
+
+require __DIR__.'/dashboard.php';
