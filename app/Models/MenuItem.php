@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
 
 class MenuItem extends Model
@@ -23,5 +24,11 @@ class MenuItem extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    // Scope to ensure that queries are filtered by the restaurant_id of the authenticated user
+    protected static function booted()
+    {
+        static::addGlobalScope(new TenantScope);
     }
 }
