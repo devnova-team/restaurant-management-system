@@ -11,9 +11,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
     Route::apiResource('orders', OrderController::class);
 });
-
 Route::post('/auth/login', [AuthController::class, 'login'])
-    ->middleware('throttle:5,1'); // Limit to 5 attempts per minute
+    ->middleware('throttle:5,1');
 
 Route::prefix('public')->group(function () {
     Route::get('/{restaurant}/menu', [PublicMenuController::class, 'index'])
@@ -29,3 +28,5 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
 });
+
+require __DIR__.'/dashboard.php';
