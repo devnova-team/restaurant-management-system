@@ -42,4 +42,6 @@ class AuthService
             'token' => $staff->createToken('auth_token')->plainTextToken,
         ];
     }
+
+
 }
