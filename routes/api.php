@@ -6,8 +6,8 @@ use App\Http\Controllers\Public\PublicMenuController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
 });
 
 Route::post('/auth/login', [AuthController::class, 'login'])
@@ -15,7 +15,7 @@ Route::post('/auth/login', [AuthController::class, 'login'])
 
 Route::prefix('public')->group(function () {
     Route::get('/{restaurant}/menu', [PublicMenuController::class, 'index'])
-        ->middleware('throttle:5,1')
+        ->middleware('throttle:60,1')
         ->name('public.menu.index');
 });
 
