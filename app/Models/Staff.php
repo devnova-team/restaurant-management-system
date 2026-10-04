@@ -15,7 +15,10 @@ class Staff extends Authenticatable
 
     protected $hidden = ['password_hash'];
 
-    protected function casts(): array
+    public function getAuthPassword()
+    {
+        return $this->password_hash;
+    }    protected function casts(): array
     {
         return [
             'password_hash' => 'hashed',
