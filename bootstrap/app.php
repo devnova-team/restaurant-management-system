@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureStaffHasRole;
 use App\Support\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -20,8 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'role' => EnsureStaffHasRole::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
 
         // Register custom exception renderers for API responses

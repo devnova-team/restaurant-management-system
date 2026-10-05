@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,5 +42,11 @@ class Order extends Model
             Staff::class,
             'created_by_staff_id'
         );
+    }
+
+    // Scope to ensure that queries are filtered by the restaurant_id of the authenticated user
+    protected static function booted()
+    {
+        static::addGlobalScope(new TenantScope);
     }
 }
