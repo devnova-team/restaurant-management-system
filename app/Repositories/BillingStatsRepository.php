@@ -11,7 +11,7 @@ class BillingStatsRepository implements BillingStatsRepositoryInterface{
     {
         return 
         (float) Order::query()
-        ->join('invoices','invoices.order_id','=','order.id')
+        ->join('invoices','invoices.order_id','=','orders.id')
         ->whereDate('orders.created_at','>=',$from)
         ->whereDate('orders.created_at','<=',$to)
         ->sum('invoices.total_amount')
@@ -21,7 +21,7 @@ class BillingStatsRepository implements BillingStatsRepositoryInterface{
     public function revenueByPaymentStatus(string $from ,string $to):array{
         return 
         Order::query()
-        ->join('invoices','invoices.order_id','=','order.id')
+        ->join('invoices','invoices.order_id','=','orders.id')
         ->select('invoices.payment_status',DB::raw('SUM(invoices.total_amount) as total'))
         ->whereDate('orders.created_at', '>=', $from)
         ->whereDate('orders.created_at', '<=', $to)

@@ -17,6 +17,7 @@ class DashboardStatsResource extends JsonResource
         return[
             'orders'=>$this->resource['orders'],
             'revenue'=>$this->resource['revenue'],
+            'low_stock'=>$this->resource['low_stock'],
         ];
     }
 }
