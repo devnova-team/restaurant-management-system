@@ -43,4 +43,17 @@ class AuthController extends Controller
             'token'=> $result['token']
         ],'تم تجديد الجلسة بنجاح');
     }
+
+
+    public function destroy($id) 
+    {
+        // استدعاء خدمة الحذف (حسب معمارية التيم عندك)
+        $this->orderService->delete($id);
+
+        // إرجاع رسالة نجاح بصيغة JSON مع كود 200
+        return response()->json([
+            'success' => true,
+            'message' => 'تم حذف الطلب بنجاح'
+        ], 200);
+    }
 }
