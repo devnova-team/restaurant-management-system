@@ -13,7 +13,8 @@ class Restaurant extends Model
         return $this->hasMany(Staff::class);
     }
 
-    public function orders(){
+    public function orders()
+    {
         return $this->hasMany(Order::class);
     }
 
@@ -26,5 +27,4 @@ class Restaurant extends Model
     {
         return $this->hasMany(Ingredient::class);
     }
-
 }
