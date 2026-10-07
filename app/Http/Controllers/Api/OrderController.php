@@ -40,7 +40,6 @@ class OrderController extends Controller
             ->setStatusCode(201);
     }
 
-    // التعديل هنا: استقبال Order $order بدل int $id
     public function show(Request $request, Order $order): OrderResource
     {
         return new OrderResource(
@@ -48,7 +47,6 @@ class OrderController extends Controller
         );
     }
 
-    // التعديل هنا: استقبال Order $order بدل int $id
     public function update(UpdateOrderRequest $request, Order $order): OrderResource
     {
         return new OrderResource(
