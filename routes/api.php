@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
+use App\Http\Controllers\Api\IngredientController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -26,4 +27,13 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::post('/staff', [StaffController::class, 'store']);
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
+});
+
+// Ingredient
+Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
+    // CRUD
+    Route::get('/ingredients', [IngredientController::class, 'index']);
+    Route::post('/ingredients', [IngredientController::class, 'store']);
+    Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show']);
+    Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
 });
