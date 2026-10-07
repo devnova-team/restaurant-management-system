@@ -7,6 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface OrderRepositoryInterface
 {
+    
     public function create(array $data): Order;
     public function addItems(Order $order, array $items): void;
     public function findWithRelations(int $id): Order;

@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 
 class UpdateOrderRequest extends FormRequest
 {
+    
     public function authorize(): bool
     {
         return true;

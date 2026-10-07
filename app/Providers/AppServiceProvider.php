@@ -3,8 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\Contracts\OrderRepositoryInterface; 
+use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Eloquent\OrderRepository;
+
 
 
 class AppServiceProvider extends ServiceProvider
