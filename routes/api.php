@@ -21,6 +21,7 @@ Route::prefix('public')->group(function () {
         ->name('public.menu.index');
 });
 
+
 // Owner
 Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     // CRUD
