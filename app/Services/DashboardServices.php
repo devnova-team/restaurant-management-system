@@ -24,6 +24,15 @@ class DashboardServices{
                 'average_invoice'=>$this->billingState->averageInvoiceValue($from,$to),
             ],
             'low_stock' => $this->lowStockState->getLowStockIngredients(),
+            'count_of_active_orders' => $this->orderState->countActiveOrders(
+                    $from,
+                    $to
+                ),
+
+            'count_active_orders_by_status' => $this->orderState->countActiveOrdersByStatus(
+                    $from,
+                    $to
+                ),
         ];
     }
 

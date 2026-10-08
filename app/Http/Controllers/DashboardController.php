@@ -17,7 +17,6 @@ class DashboardController extends Controller
 
     public function stats(DashboardRequest $request): JsonResponse
 {
-    $this->restaurantId($request);
     $data = $this->services->getStats(
         $request->validated('from'),
         $request->validated('to')
@@ -27,14 +26,4 @@ class DashboardController extends Controller
 }
 
 
-    public function restaurantId(DashboardRequest $request):int{
-        if(Auth::check() && isset(Auth::user()->restaurant_id)){
-            return (int) Auth::user()->restaurant_id;
-        }
-        if(app()->environment('local') && $request->has('restaurant_id')){
-            return (int) $request->query('restaurant_id');
-        }
-
-        abort(401,'غير مصرح لك');
-    }
 }
