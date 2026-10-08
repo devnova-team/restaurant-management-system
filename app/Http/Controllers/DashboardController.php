@@ -15,12 +15,16 @@ class DashboardController extends Controller
     use  ApiResponse;
     public function __construct(protected DashboardServices $services){}
 
-    public function stats(DashboardRequest $request):JsonResponse{
-        $restaurantId=$this->restaurantId($request);
-        $data=$this->services->getStats($request->validated('from'),$request->validated('to'));
+    public function stats(DashboardRequest $request): JsonResponse
+{
+    $this->restaurantId($request);
+    $data = $this->services->getStats(
+        $request->validated('from'),
+        $request->validated('to')
+    );
 
-        return $this->success(new DashboardStatsResource($data));
-    }
+    return $this->success(new DashboardStatsResource($data));
+}
 
 
     public function restaurantId(DashboardRequest $request):int{

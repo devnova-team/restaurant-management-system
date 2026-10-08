@@ -3,10 +3,13 @@ namespace   App\Services;
 
 use App\Repositories\Interfaces\BillingStatsRepositoryInterface;
 use App\Repositories\Interfaces\OrderStatsRepositoryInterface;
-
+use App\Repositories\Interfaces\LowStockStatsRepositoryInterface;
 class DashboardServices{
-    public function __construct(protected BillingStatsRepositoryInterface $billingState,protected OrderStatsRepositoryInterface $orderState){}
-    public function getStats(string $from, string $to):array{
+        public function __construct(
+            protected BillingStatsRepositoryInterface $billingState,
+            protected OrderStatsRepositoryInterface $orderState,
+            protected LowStockStatsRepositoryInterface $lowStockState
+        ) {}    public function getStats(string $from, string $to):array{
 
         return [
             'orders'=>[
@@ -20,6 +23,7 @@ class DashboardServices{
                 'by_payment_status'=>$this->billingState->revenueByPaymentStatus($from,$to),
                 'average_invoice'=>$this->billingState->averageInvoiceValue($from,$to),
             ],
+            'low_stock' => $this->lowStockState->getLowStockIngredients(),
         ];
     }
 
