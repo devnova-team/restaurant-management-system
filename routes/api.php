@@ -21,28 +21,22 @@ Route::prefix('public')->group(function () {
         ->name('public.menu.index');
 });
 
-// Owner
+// Owner APIs
 Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
-    // CRUD
+
+    // Staff
     Route::get('/staff', [StaffController::class, 'index']);
     Route::post('/staff', [StaffController::class, 'store']);
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
-});
 
-// Ingredient
-Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
-    // CRUD
+    // Ingredients
     Route::get('/ingredients', [IngredientController::class, 'index']);
     Route::post('/ingredients', [IngredientController::class, 'store']);
     Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show']);
     Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
     Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
-});
 
-// Recipe
-Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
-    Route::post('/menu-items/{menuItem}/recipe', [RecipeController::class, 'store']);
+    // Recipe
     Route::put('/menu-items/{menuItem}/recipe', [RecipeController::class, 'replace']);
-    Route::get('/menu-items/{menuItem}/recipe', [RecipeController::class, 'show']);
 });
