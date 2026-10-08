@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Ingredient;
+use App\Models\MenuItem;
 use App\Models\Staff;
 use Illuminate\Support\Collection;
 
@@ -38,6 +39,23 @@ class IngredientService
         $ingredient->update($data);
 
         return $ingredient;
+    }
+
+    public function destroy(Ingredient $ingredient): void
+    {
+        $isUsedInActiveMenuItem = MenuItem::where('is_available', true)
+            ->whereHas('ingredients', function ($query) use ($ingredient) {
+                $query->where('ingredients.id', $ingredient->id);
+            })
+            ->exists();
+
+        if ($isUsedInActiveMenuItem) {
+            throw new \Symfony\Component\HttpKernel\Exception\ConflictHttpException(
+                'لا يمكن حذف المكون لأنه مستخدم في وصفة صنف نشط'
+            );
+        }
+
+        $ingredient->delete();
     }
 
 }

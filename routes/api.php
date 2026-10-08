@@ -37,6 +37,7 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::post('/ingredients', [IngredientController::class, 'store']);
     Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show']);
     Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
+    Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 });
 
 // Recipe

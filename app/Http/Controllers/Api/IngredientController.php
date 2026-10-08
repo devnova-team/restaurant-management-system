@@ -57,4 +57,11 @@ class IngredientController extends Controller
             'ingredient' => new IngredientResource($ingredient),
         ], 'تم جلب بيانات المكون بنجاح');
     }
+
+    public function destroy(Ingredient $ingredient)
+    {
+        $this->ingredientService->destroy($ingredient);
+
+        return ApiResponse::success(null, 'تم حذف المكون بنجاح');
+    }
 }
