@@ -6,19 +6,19 @@ use App\Repositories\Interfaces\OrderStatsRepositoryInterface;
 
 class DashboardServices{
     public function __construct(protected BillingStatsRepositoryInterface $billingState,protected OrderStatsRepositoryInterface $orderState){}
-    public function getStats(int $restaurantId ,string $from, string $to):array{
+    public function getStats(string $from, string $to):array{
 
         return [
             'orders'=>[
-                'total'=>$this->orderState->countOrders($restaurantId,$from,$to),
-                'by_status'=>$this->orderState->countOrdersByStatus($restaurantId,$from,$to),
-                'by_channel'=>$this->orderState->countOrdersByChannel($restaurantId,$from,$to),
-                'top_selling'=>$this->orderState->topSellingItems($restaurantId,$from,$to),
+                'total'=>$this->orderState->countOrders($from,$to),
+                'by_status'=>$this->orderState->countOrdersByStatus($from,$to),
+                'by_channel'=>$this->orderState->countOrdersByChannel($from,$to),
+                'top_selling'=>$this->orderState->topSellingItems($from,$to),
             ],
             'revenue'=>[
-                'total'=>$this->billingState->totalRevenue($restaurantId,$from,$to),
-                'by_payment_status'=>$this->billingState->revenueByPaymentStatus($restaurantId,$from,$to),
-                'average_invoice'=>$this->billingState->averageInvoiceValue($restaurantId,$from,$to),
+                'total'=>$this->billingState->totalRevenue($from,$to),
+                'by_payment_status'=>$this->billingState->revenueByPaymentStatus($from,$to),
+                'average_invoice'=>$this->billingState->averageInvoiceValue($from,$to),
             ],
         ];
     }

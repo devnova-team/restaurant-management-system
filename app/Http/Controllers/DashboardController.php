@@ -17,7 +17,7 @@ class DashboardController extends Controller
 
     public function stats(DashboardRequest $request):JsonResponse{
         $restaurantId=$this->restaurantId($request);
-        $data=$this->services->getStats($restaurantId,$request->validated('from'),$request->validated('to'));
+        $data=$this->services->getStats($request->validated('from'),$request->validated('to'));
 
         return $this->success(new DashboardStatsResource($data));
     }

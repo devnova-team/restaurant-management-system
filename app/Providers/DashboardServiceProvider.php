@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-// use App\Repositories\BillingStatsRepository;
-use App\Repositories\Fakes\FakeBillingStatsRepository;
+use App\Repositories\BillingStatsRepository;
 use App\Repositories\Interfaces\BillingStatsRepositoryInterface;
 use App\Repositories\Interfaces\OrderStatsRepositoryInterface;
 use App\Repositories\OrderStatsRepository;
@@ -17,11 +16,8 @@ class DashboardServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(OrderStatsRepositoryInterface::class, OrderStatsRepository::class);
-        // $this->app->bind(BillingStatsRepositoryInterface::class,BillingStatsRepository::class);
-        $this->app->bind(
-            BillingStatsRepositoryInterface::class,
-            FakeBillingStatsRepository::class
-        );
+        $this->app->bind(BillingStatsRepositoryInterface::class,BillingStatsRepository::class);
+       
     }
 
     /**
