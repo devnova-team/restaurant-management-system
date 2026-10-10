@@ -38,9 +38,9 @@ class AuthController extends Controller
     {
         $result = $this->authService->refresh($request->user());
 
-        return ApiResponse::success( [
-            'staff'=> new StaffResource($result['staff']),
-            'token'=> $result['token']
-        ],'تم تجديد الجلسة بنجاح');
+        return ApiResponse::success([
+            'staff' => new StaffResource($result['staff']),
+            'token' => $result['token'],
+        ], 'تم تجديد الجلسة بنجاح');
     }
 }

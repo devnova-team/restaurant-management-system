@@ -2,13 +2,10 @@
 
 namespace App\Enums;
 
-enum StaffRole : string
+enum StaffRole: string
 {
     case Owner = 'owner';
     case Cashier = 'cashier';
     case Kitchen = 'kitchen';
 
-
-
 }
-

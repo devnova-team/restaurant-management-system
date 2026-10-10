@@ -34,7 +34,8 @@ class StaffController extends Controller
         ], 'تم إضافة الموظف بنجاح');
     }
 
-    public function update(UpdateStaffRequest $request, Staff $staff){
+    public function update(UpdateStaffRequest $request, Staff $staff)
+    {
 
         $validatedData = $request->validated();
         $staff = $this->staffService->update($staff, $validatedData);
@@ -44,8 +45,10 @@ class StaffController extends Controller
         ], 'تم تعديل بيانات الموظف بنجاح');
     }
 
-    public function destroy(Staff $staff){
+    public function destroy(Staff $staff)
+    {
         $this->staffService->destroy($staff);
+
         return ApiResponse::success(null, 'تم تعطيل حساب الموظف بنجاح');
     }
 }
