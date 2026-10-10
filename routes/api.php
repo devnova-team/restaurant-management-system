@@ -4,11 +4,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
+use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::apiResource('orders', OrderController::class);
 });
 
 Route::post('/auth/login', [AuthController::class, 'login'])

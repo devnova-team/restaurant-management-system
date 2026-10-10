@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ingredient extends Model
 {
-    protected $fillable = ['name', 'quantity', 'restaurant_id', 'unit', 'low_stock_threshold'];
+    protected $fillable = ['name', 'quantity', 'restaurant_id', 'unit', 'low_stock_threshold', 'unit_price'];
 
     public function restaurant()
     {

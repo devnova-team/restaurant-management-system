@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Interfaces\InvoiceRepositoryInterface;
 use App\Repositories\InvoiceRepository;
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\Contracts\OrderRepositoryInterface; 
+use App\Repositories\Eloquent\OrderRepository;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
             InvoiceRepositoryInterface::class,
             InvoiceRepository::class
         );
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
     }
 
     /**
@@ -27,3 +31,5 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 }
+
+
