@@ -1,8 +1,8 @@
 <?php
 namespace App\Repositories\Interfaces;
 Interface BillingStatsRepositoryInterface{
-    public function totalRevenue(string $from,string $to):float;
-    public function revenueByPaymentStatus(string $from, string $to): array;
+    public function totalRevenue():float;
+    public function revenueByPaymentStatus(): array;
 
-    public function averageInvoiceValue(string $from, string $to): float;
+    public function averageInvoiceValue(): float;
 }

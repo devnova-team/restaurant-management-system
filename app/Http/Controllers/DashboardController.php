@@ -7,6 +7,7 @@ use App\Http\Resources\DashboardStatsResource;
 use App\Services\DashboardServices;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -14,13 +15,9 @@ class DashboardController extends Controller
         protected DashboardServices $services
     ) {}
 
-    public function stats(DashboardRequest $request): JsonResponse
+    public function stats(Request $request): JsonResponse
     {
-        $data = $this->services->getStats(
-            $request->validated('from'),
-            $request->validated('to')
-        );
-
+        $data=$this->services->getStats();
         return ApiResponse::success(
             new DashboardStatsResource($data)
         );
