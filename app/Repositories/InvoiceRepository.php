@@ -14,7 +14,10 @@ class InvoiceRepository implements InvoiceRepositoryInterface
 
     public function findById(int $id): ?Invoice
     {
-        return Invoice::with('order')->find($id);
+        return Invoice::with([
+            'order',
+            'order.orderItems.menuItem',
+        ])->find($id);
     }
 
     public function findByOrderId(int $orderId): ?Invoice
@@ -30,6 +33,6 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             'payment_status' => $status,
         ]);
 
-        return $invoice->fresh();
+        return $this->findById($invoice->id) ?? $invoice->fresh();
     }
 }

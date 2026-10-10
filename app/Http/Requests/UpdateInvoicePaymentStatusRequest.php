@@ -22,6 +22,11 @@ class UpdateInvoicePaymentStatusRequest extends FormRequest
                     'paid',
                 ]),
             ],
+            'amount' => [
+                'required_if:payment_status,paid',
+                'numeric',
+                'min:0',
+            ],
         ];
     }
 }

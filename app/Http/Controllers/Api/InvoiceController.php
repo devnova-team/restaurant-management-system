@@ -49,9 +49,12 @@ class InvoiceController extends Controller
         UpdateInvoicePaymentStatusRequest $request,
         int $id
     ): JsonResponse {
+        $validated = $request->validated();
+
         $invoice = $this->invoiceService->updatePaymentStatus(
             $id,
-            $request->validated()['payment_status']
+            $validated['payment_status'],
+            $validated['amount'] ?? null
         );
 
         return ApiResponse::success(
