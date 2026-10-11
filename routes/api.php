@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
@@ -28,5 +29,8 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::get('/staff', [StaffController::class, 'index']);
     Route::post('/staff', [StaffController::class, 'store']);
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
-    Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
+    // Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
 });
+
+
+Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);

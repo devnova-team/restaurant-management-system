@@ -2,14 +2,15 @@
 
 namespace App\Repositories\Eloquent;
 
+
 use App\Models\Order;
-use App\Models\OrderItem; 
+use App\Models\OrderItem;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    
+
 
     public function create(array $data): Order
     {
@@ -59,14 +60,21 @@ class OrderRepository implements OrderRepositoryInterface
         return $order;
     }
 
-    public function deleteItems(Order $order): void
+    public function transitionStatus(Order $order, string $from, string $to): bool
     {
-        OrderItem::where('order_id', $order->id)->delete();
+        return Order::where('id', $order->id)
+            ->where('status', $from)
+            ->update(['status' => $to]) === 1;
     }
 
-    public function delete(Order $order): void
-    {
-        $this->deleteItems($order);
-        $order->delete();
-    }
+    // public function deleteItems(Order $order): void
+    // {
+    //     OrderItem::where('order_id', $order->id)->delete();
+    // }
+
+    // public function delete(Order $order): void
+    // {
+    //     $this->deleteItems($order);
+    //     $order->delete();
+    // }
 }

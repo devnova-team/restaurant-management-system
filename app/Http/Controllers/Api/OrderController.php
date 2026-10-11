@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+// use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Support\ApiResponse;
+
 
 class OrderController extends Controller
 {
@@ -18,50 +21,77 @@ class OrderController extends Controller
         private readonly OrderService $orderService
     ) {}
 
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
         $orders = $this->orderService->list(
             $request->only(['status', 'channel', 'per_page']),
             $request->user()
         );
 
-        return OrderResource::collection($orders);
+        return ApiResponse::success(
+            OrderResource::collection($orders),
+            'تم جلب الطلبات بنجاح'
+        );
     }
-
-    public function store(StoreOrderRequest $request): JsonResponse
+   public function store(StoreOrderRequest $request): JsonResponse
     {
         $order = $this->orderService->create(
             $request->user(),
             $request->validated()
         );
 
-        return (new OrderResource($order))
-            ->response()
-            ->setStatusCode(201);
+        return ApiResponse::success(
+            new OrderResource($order),
+            'تم إنشاء الطلب بنجاح',
+            201
+        );
     }
-
-    public function show(Request $request, Order $order): OrderResource
+    public function show(Request $request, Order $order): JsonResponse
     {
-        return new OrderResource(
-            $this->orderService->show($order, $request->user())
+        $orderData = $this->orderService->show($order, $request->user());
+
+        return ApiResponse::success(
+            new OrderResource($orderData),
+            'تم جلب الطلب بنجاح'
+        );
+    }
+    public function update(UpdateOrderRequest $request, Order $order): JsonResponse
+    {
+        $orderData = $this->orderService->update($order, $request->validated(), $request->user());
+
+        return ApiResponse::success(
+            new OrderResource($orderData),
+            'تم تحديث الطلب بنجاح'
         );
     }
 
-    
-    public function update(UpdateOrderRequest $request, Order $order): OrderResource
+    // public function destroy(Request $request, Order $order): JsonResponse
+    // {
+    //     $this->orderService->delete($order, $request->user());
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'تم حذف الطلب بنجاح'
+    //     ], 200);
+    // }
+
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order): JsonResponse
     {
-        return new OrderResource(
-            $this->orderService->update($order, $request->validated(), $request->user())
+        $order = $this->orderService->changeStatus(
+            $order,
+            $request->validated()['status'],
+            $request->user()
+        );
+
+        return ApiResponse::success(
+            (new OrderResource($order))->resolve(),
+            'تم تحديث حالة الطلب بنجاح'
         );
     }
 
-    public function destroy(Request $request, Order $order): JsonResponse
-    {
-        $this->orderService->delete($order, $request->user());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'تم حذف الطلب بنجاح'
-        ], 200);
-    }
+
+
+
+
 }
