@@ -23,10 +23,11 @@ class UpdateIngredientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'quantity' => ['sometimes', 'numeric', 'min:0'],
-            'unit' => ['sometimes', 'string', 'max:50'],
-            'low_stock_threshold' => ['sometimes', 'numeric', 'min:0'],
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'quantity' => ['sometimes', 'required', 'numeric', 'min:0'],
+            'unit' => ['sometimes', 'required', 'string', 'max:50'],
+            'low_stock_threshold' => ['sometimes', 'required', 'numeric', 'min:0'],
+            'unit_price' => ['sometimes', 'required', 'numeric', 'min:0'],
         ];
     }
 }

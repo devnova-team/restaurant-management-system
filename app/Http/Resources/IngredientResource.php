@@ -20,6 +20,7 @@ class IngredientResource extends JsonResource
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'low_stock_threshold' => $this->low_stock_threshold,
+            'unit_price' => $this->unit_price,
         ];
     }
 }

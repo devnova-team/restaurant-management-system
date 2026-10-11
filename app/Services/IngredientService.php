@@ -19,7 +19,7 @@ class IngredientService
 
     public function index(): Collection
     {
-        return Ingredient::all();
+        return Ingredient::query()->get();
     }
 
     public function store(Staff $owner, array $data): Ingredient
@@ -43,6 +43,14 @@ class IngredientService
 
     public function destroy(Ingredient $ingredient): void
     {
+        // Prevent deletion if the ingredient has historical usage records.
+        if ($ingredient->ingredientUsages()->exists()) {
+            throw new \Symfony\Component\HttpKernel\Exception\ConflictHttpException(
+                'لا يمكن حذف المكون لأنه مستخدم في طلبات سابقة'
+            );
+        }
+
+        // Prevent deletion if the ingredient belongs to an active menu item's recipe.
         $isUsedInActiveMenuItem = MenuItem::where('is_available', true)
             ->whereHas('ingredients', function ($query) use ($ingredient) {
                 $query->where('ingredients.id', $ingredient->id);

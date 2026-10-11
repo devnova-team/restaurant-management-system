@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\MenuItem;
+use Illuminate\Support\Facades\DB;
 
 class RecipeService
 {
@@ -16,15 +17,19 @@ class RecipeService
 
     public function replace(MenuItem $menuItem, array $data): MenuItem
     {
-        $menuItem->ingredients()->sync(
-            collect($data['ingredients'])->mapWithKeys(function ($ingredient) {
-                return [
-                    $ingredient['ingredient_id'] => [
-                        'quantity_required' => $ingredient['quantity_required'],
-                    ],
-                ];
-            })->toArray()
-        );
+        DB::transaction(function () use ($menuItem, $data) {
+            $ingredients = collect($data['ingredients'])
+                ->mapWithKeys(function ($ingredient) {
+                    return [
+                        $ingredient['ingredient_id'] => [
+                            'quantity_required' => $ingredient['quantity_required'],
+                        ],
+                    ];
+                })
+                ->toArray();
+
+            $menuItem->ingredients()->sync($ingredients);
+        });
 
         return $menuItem->load('ingredients');
     }

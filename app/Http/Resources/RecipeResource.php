@@ -17,13 +17,15 @@ class RecipeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'ingredients' => $this->ingredients->map(function ($ingredient) {
-                return [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                    'quantity_required' => $ingredient->pivot->quantity_required,
-                    'unit' => $ingredient->unit,
-                ];
+            'ingredients' => $this->whenLoaded('ingredients', function () {
+                return $this->ingredients->map(function ($ingredient) {
+                    return [
+                        'id' => $ingredient->id,
+                        'name' => $ingredient->name,
+                        'quantity_required' => $ingredient->pivot->quantity_required,
+                        'unit' => $ingredient->unit,
+                    ];
+                });
             }),
         ];
     }

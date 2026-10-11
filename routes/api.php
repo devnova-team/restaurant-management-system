@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
 use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\RecipeController;
+use App\Http\Controllers\Api\StockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -39,4 +40,10 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
 
     // Recipe
     Route::put('/menu-items/{menuItem}/recipe', [RecipeController::class, 'replace']);
+
+    // Stock
+    Route::get('/menu-items/{menuItem}/stock/availability', [
+        StockController::class,
+        'checkAvailability',
+    ]);
 });
