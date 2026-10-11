@@ -54,11 +54,8 @@ class InvoiceService
         return $this->invoiceRepository->findById($id);
     }
 
-    public function updatePaymentStatus(
-        int $id,
-        string $status,
-        ?float $amount = null
-    ): Invoice {
+    public function payInvoice(int $id, float $amount): Invoice
+    {
         $invoice = $this->invoiceRepository->findById($id);
 
         if (! $invoice) {
@@ -69,30 +66,17 @@ class InvoiceService
 
         if ($invoice->payment_status === 'paid') {
             throw ValidationException::withMessages([
-                'payment_status' => [
-                    'A paid invoice cannot be changed through this endpoint.',
-                ],
+                'payment_status' => ['Invoice has already been paid.'],
             ]);
         }
 
-        if ($status !== 'paid' && $status !== 'unpaid') {
+        if (round((float) $amount, 2) !== round((float) $invoice->total_amount, 2)) {
             throw ValidationException::withMessages([
-                'payment_status' => ['Invalid payment status.'],
+                'amount' => ['Payment amount must be equal to the invoice total amount.'],
             ]);
         }
 
-        if ($status === 'paid') {
-            if ($amount === null || $amount < $invoice->total_amount) {
-                throw ValidationException::withMessages([
-                    'amount' => ['Payment amount must be equal to or greater than the invoice total amount.'],
-                ]);
-            }
-        }
-
-        return $this->invoiceRepository->updatePaymentStatus(
-            $invoice,
-            $status
-        );
+        return $this->invoiceRepository->markAsPaid($invoice);
     }
 
     private function calculateOrderTotal(Order $order): float

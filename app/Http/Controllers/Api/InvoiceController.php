@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PayInvoiceRequest;
 use App\Http\Requests\StoreInvoiceRequest;
-use App\Http\Requests\UpdateInvoicePaymentStatusRequest;
 use App\Services\InvoiceService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -45,21 +45,16 @@ class InvoiceController extends Controller
         );
     }
 
-    public function updatePaymentStatus(
-        UpdateInvoicePaymentStatusRequest $request,
-        int $id
-    ): JsonResponse {
-        $validated = $request->validated();
-
-        $invoice = $this->invoiceService->updatePaymentStatus(
+    public function pay(PayInvoiceRequest $request, int $id): JsonResponse
+    {
+        $invoice = $this->invoiceService->payInvoice(
             $id,
-            $validated['payment_status'],
-            $validated['amount'] ?? null
+            (float) $request->validated('amount')
         );
 
         return ApiResponse::success(
             $invoice,
-            'Payment status updated successfully.'
+            'Invoice paid successfully.'
         );
     }
 }

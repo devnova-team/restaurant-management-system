@@ -12,8 +12,5 @@ interface InvoiceRepositoryInterface
 
     public function findByOrderId(int $orderId): ?Invoice;
 
-    public function updatePaymentStatus(
-        Invoice $invoice,
-        string $status
-    ): Invoice;
+    public function markAsPaid(Invoice $invoice): Invoice;
 }

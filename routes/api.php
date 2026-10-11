@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
-use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -32,8 +32,8 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
 });
 
 // INVOICES
-Route::prefix('invoices')->group(function () {
+Route::middleware(['auth:sanctum', 'role:cashier'])->prefix('invoices')->group(function () {
     Route::post('/', [InvoiceController::class, 'store']);
     Route::get('/{id}', [InvoiceController::class, 'show']);
-    Route::patch('/{id}/payment-status', [InvoiceController::class, 'updatePaymentStatus']);
+    Route::post('/{id}/pay', [InvoiceController::class, 'pay']);
 });

@@ -25,12 +25,10 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         return Invoice::where('order_id', $orderId)->first();
     }
 
-    public function updatePaymentStatus(
-        Invoice $invoice,
-        string $status
-    ): Invoice {
+    public function markAsPaid(Invoice $invoice): Invoice
+    {
         $invoice->update([
-            'payment_status' => $status,
+            'payment_status' => 'paid',
         ]);
 
         return $this->findById($invoice->id) ?? $invoice->fresh();
