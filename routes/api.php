@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
 use App\Http\Controllers\Public\PublicOrderController;
-use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -22,6 +22,9 @@ Route::prefix('public')->group(function () {
     Route::middleware('throttle:20,1')->group(function () {
         Route::post('/{restaurant}/orders', [PublicOrderController::class, 'store']);
     });
+    Route::get('/track/{order:tracking_token}', [PublicOrderController::class, 'track'])
+        ->middleware('throttle:60,1')
+        ->name('public.orders.track');
 });
 
 // Owner

@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class PublicTrackingResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'status' => $this->status,
+            'placed_at' => $this->created_at,
+            'items' => $this->orderItems->map(fn ($item): array => [
+                'name' => $item->menuItem->name,
+                'quantity' => $item->quantity,
+                'notes' => $item->notes,
+            ]),
+        ];
+    }
+}
