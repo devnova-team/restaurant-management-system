@@ -11,7 +11,8 @@ class StockService
      * Create a new class instance.
      */
     public function __construct(
-        private StockAvailabilityService $stockAvailabilityService
+        private StockAvailabilityService $stockAvailabilityService,
+        private StockDeductionService $stockDeductionService
     ) {
     }
 
@@ -55,5 +56,15 @@ class StockService
             'max_quantity' => $availability['max_quantity'],
             'ingredients' => $availability['ingredients'],
         ];
+    }
+
+    public function deductStock(
+        MenuItem $menuItem,
+        int $requestedQuantity = 1
+    ): array {
+        return $this->stockDeductionService->deduct(
+            $menuItem,
+            $requestedQuantity
+        );
     }
 }
