@@ -30,11 +30,11 @@ class OrderService
     ];
 
     private const ROLES_BY_TARGET = [
-        'preparing'        => ['kitchen', 'owner'],
-        'ready'            => ['kitchen', 'owner'],
-        'served'           => ['cashier', 'owner'],
-        'out_for_delivery' => ['cashier', 'owner'],
-        'delivered'        => ['cashier', 'owner'],
+        'preparing'        => ['kitchen'],
+        'ready'            => ['kitchen'],
+        'served'           => ['cashier'],
+        'out_for_delivery' => ['cashier'],
+        'delivered'        => ['cashier'],
     ];
 
     private const STATUS_LABELS = [
@@ -87,7 +87,7 @@ class OrderService
             $this->orders->update($order, collect($data)->except('items')->all());
 
             if (isset($data['items'])) {
-                // $this->orders->deleteItems($order);
+                $this->orders->deleteItems($order);
                 $this->orders->addItems($order, $this->buildItems($order, $data['items']));
             }
 
@@ -118,7 +118,7 @@ class OrderService
             );
         }
 
-        if (! in_array($staff->role, self::ROLES_BY_TARGET[$newStatus] ?? [], true)) {
+        if (! in_array($staff->role->value, self::ROLES_BY_TARGET[$newStatus] ?? [], true)) {
             throw new AccessDeniedHttpException('ليس لديك صلاحية لتغيير الطلب إلى هذه الحالة.');
         }
 

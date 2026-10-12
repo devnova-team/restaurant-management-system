@@ -16,6 +16,6 @@ interface OrderRepositoryInterface
     public function findForRestaurant(int $id, int $restaurantId): Order;
     public function update(Order $order, array $data): Order;
     public function transitionStatus(Order $order, string $from, string $to): bool;
-    // public function deleteItems(Order $order): void;
+    public function deleteItems(Order $order): void;
     // public function delete(Order $order): void;
 }

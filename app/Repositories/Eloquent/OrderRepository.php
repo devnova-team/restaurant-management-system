@@ -67,10 +67,10 @@ class OrderRepository implements OrderRepositoryInterface
             ->update(['status' => $to]) === 1;
     }
 
-    // public function deleteItems(Order $order): void
-    // {
-    //     OrderItem::where('order_id', $order->id)->delete();
-    // }
+    public function deleteItems(Order $order): void
+    {
+        OrderItem::where('order_id', $order->id)->delete();
+    }
 
     // public function delete(Order $order): void
     // {
