@@ -95,12 +95,12 @@ class OrderService
         });
     }
 
-    public function delete(Order $order, Staff $staff): void
-    {
-        $this->assertEditable($order, 'لا يمكن حذف الطلب بعد بدء تحضيره.');
+    // public function delete(Order $order, Staff $staff): void
+    // {
+    //     $this->assertEditable($order, 'لا يمكن حذف الطلب بعد بدء تحضيره.');
 
-        // $this->orders->delete($order);
-    }
+    //     // $this->orders->delete($order);
+    // }
 
     public function changeStatus(Order $order, string $newStatus, Staff $staff): Order
     {
