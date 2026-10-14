@@ -41,9 +41,4 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     // Recipe
     Route::put('/menu-items/{menuItem}/recipe', [RecipeController::class, 'replace']);
 
-    // Stock
-    Route::get('/menu-items/{menuItem}/stock/availability', [
-        StockController::class,
-        'checkAvailability',
-    ]);
 });

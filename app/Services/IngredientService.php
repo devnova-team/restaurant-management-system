@@ -50,16 +50,15 @@ class IngredientService
             );
         }
 
-        // Prevent deletion if the ingredient belongs to an active menu item's recipe.
-        $isUsedInActiveMenuItem = MenuItem::where('is_available', true)
-            ->whereHas('ingredients', function ($query) use ($ingredient) {
-                $query->where('ingredients.id', $ingredient->id);
-            })
-            ->exists();
+        // Prevent deletion if the ingredient belongs to any menu item's recipe.        
+        $isUsedInRecipe = MenuItem::whereHas("ingredients", function ($query) use ($ingredient) {
+            $query->where("ingredients.id", $ingredient->id);
+        })->exists();
 
-        if ($isUsedInActiveMenuItem) {
+
+        if ($isUsedInRecipe) {
             throw new \Symfony\Component\HttpKernel\Exception\ConflictHttpException(
-                'لا يمكن حذف المكون لأنه مستخدم في وصفة صنف نشط'
+                'لا يمكن حذف المكون لأنه مستخدم في وصفة أحد الأصناف'
             );
         }
 

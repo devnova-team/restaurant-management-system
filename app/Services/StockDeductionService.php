@@ -7,6 +7,7 @@ use App\Models\MenuItem;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class StockDeductionService
 {
@@ -32,11 +33,6 @@ class StockDeductionService
             $menuItem,
             $requestedQuantity
         ) {
-            $menuItem = MenuItem::query()
-                ->whereKey($menuItem->id)
-                ->where('restaurant_id', $menuItem->restaurant_id)
-                ->firstOrFail();
-
             $ingredients = $menuItem->ingredients()->get();
 
             if ($ingredients->isEmpty()) {
@@ -51,7 +47,7 @@ class StockDeductionService
                     * $requestedQuantity;
 
                 if ($quantityRequired <= 0) {
-                    throw new InvalidArgumentException(
+                    throw new UnprocessableEntityHttpException(
                         'كمية المكوّن المطلوبة يجب أن تكون أكبر من صفر'
                     );
                 }
