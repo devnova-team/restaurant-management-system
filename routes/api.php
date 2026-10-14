@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
 use App\Http\Controllers\Public\PublicOrderController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Menu\MenuItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -31,6 +32,14 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::post('/staff', [StaffController::class, 'store']);
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
+});
+
+// Menu Items
+Route::prefix('menu-items')->middleware(['auth:sanctum', 'role:owner'])->group(function () {
+    Route::get('/', [MenuItemController::class, 'index']);
+    Route::post('/', [MenuItemController::class, 'store']);
+    Route::put('/{menuItem}', [MenuItemController::class, 'update']);
+    Route::delete('/{menuItem}', [MenuItemController::class, 'destroy']);
 });
 
 require __DIR__.'/dashboard.php';
