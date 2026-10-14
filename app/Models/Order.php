@@ -24,9 +24,15 @@ class Order extends Model
         return $this->hasOne(Invoice::class);
     }
 
+
     // Scope to ensure that queries are filtered by the restaurant_id of the authenticated user
     protected static function booted()
     {
         static::addGlobalScope(new TenantScope);
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+
     }
 }

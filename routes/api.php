@@ -7,6 +7,7 @@ use App\Http\Controllers\Public\PublicMenuController;
 use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
@@ -34,3 +35,12 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
 
 
 Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
+Route::post('/auth/login', [AuthController::class, 'login'])
+    ->middleware('throttle:5,1');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+
+    Route::post('/orders', [OrderController::class, 'store']);
+});
