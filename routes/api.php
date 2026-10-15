@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('orders', [OrderController::class, 'index']);
     Route::get('orders/{order}', [OrderController::class, 'show']);
 
-    Route::middleware('role:owner,cashier')->group(function () {
+    Route::middleware('role:owner')->group(function () {
         Route::post('orders', [OrderController::class, 'store']);
         Route::put('orders/{order}', [OrderController::class, 'update']);
         Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
