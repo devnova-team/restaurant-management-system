@@ -69,7 +69,7 @@ class StockOrderDeductionAndCostSnapshotService
                         !== (int) $lockedOrder->restaurant_id
                 ) {
                     throw new UnprocessableEntityHttpException(
-                        'أحد أصناف الطلب غير صالح لهذا المطعم'
+                        'أحد أصناف الطلب غير صالح'
                     );
                 }
 
@@ -136,7 +136,7 @@ class StockOrderDeductionAndCostSnapshotService
                 !== count($requiredByIngredient)
             ) {
                 throw new UnprocessableEntityHttpException(
-                    'أحد مكونات الوصفات غير موجود أو لا يتبع المطعم'
+                    'أحد مكونات الوصفات غير موجود '
                 );
             }
 
