@@ -3,20 +3,26 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Public\PublicMenuController;
+use App\Http\Controllers\Public\PublicOrderController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Menu\MenuItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::apiResource('orders', OrderController::class);
 });
-
 Route::post('/auth/login', [AuthController::class, 'login'])
-    ->middleware('throttle:5,1'); // Limit to 5 attempts per minute
+    ->middleware('throttle:5,1');
 
 Route::prefix('public')->group(function () {
     Route::get('/{restaurant}/menu', [PublicMenuController::class, 'index'])
         ->middleware('throttle:60,1')
         ->name('public.menu.index');
+    Route::middleware('throttle:20,1')->group(function () {
+        Route::post('/{restaurant}/orders', [PublicOrderController::class, 'store']);
+    });
 });
 
 // Owner
@@ -27,3 +33,13 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
 });
+
+// Menu Items
+Route::prefix('menu-items')->middleware(['auth:sanctum', 'role:owner'])->group(function () {
+    Route::get('/', [MenuItemController::class, 'index']);
+    Route::post('/', [MenuItemController::class, 'store']);
+    Route::put('/{menuItem}', [MenuItemController::class, 'update']);
+    Route::delete('/{menuItem}', [MenuItemController::class, 'destroy']);
+});
+
+require __DIR__.'/dashboard.php';
