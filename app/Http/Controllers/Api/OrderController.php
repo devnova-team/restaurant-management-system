@@ -75,11 +75,13 @@ class OrderController extends Controller
     //     ], 200);
     // }
 
-    public function updateStatus(UpdateOrderStatusRequest $request, Order $order): JsonResponse
+
+
+    public function updateKitchenStatus(Request $request, Order $order): JsonResponse
     {
-        $order = $this->orderService->changeStatus(
+        $order = $this->orderService->changeKitchenStatus(
             $order,
-            $request->validated()['status'],
+            $request->input('status'),
             $request->user()
         );
 
@@ -89,6 +91,20 @@ class OrderController extends Controller
         );
     }
 
+
+    public function updateFinalStatus(UpdateOrderStatusRequest $request, Order $order): JsonResponse
+    {
+        $order = $this->orderService->changeStatus(
+            $order,
+            $request->validated()['status'],
+            $request->user()
+        );
+
+        return ApiResponse::success(
+            (new OrderResource($order))->resolve(),
+            'تم تحديث الحالة النهائية للطلب بنجاح'
+        );
+    }
 
 
 

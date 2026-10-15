@@ -30,21 +30,22 @@ Route::prefix('public')->group(function () {
 });
 
 
-// Order
-Route::get('orders', [OrderController::class, 'index']);
-Route::get('orders/{order}', [OrderController::class, 'show']);   // مش في قايمة كريم، اسأله لو عايزه يتشال
+Route::middleware('auth:sanctum')->group(function () {
 
-// الكاشير + المالك
-Route::middleware('role:owner,cashier')->group(function () {
-    Route::post('orders', [OrderController::class, 'store']);
-    Route::put('orders/{order}', [OrderController::class, 'update']);
-    Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
+    // Order
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
+
+    Route::middleware('role:owner,cashier')->group(function () {
+        Route::post('orders', [OrderController::class, 'store']);
+        Route::put('orders/{id}', [OrderController::class, 'update']);
+        Route::put('orders/{id}/final-status', [OrderController::class, 'updateFinalStatus']);
+    });
+
+    // kitchen
+    Route::put('kitchen/orders/{id}/status', [OrderController::class, 'updateKitchenStatus'])
+        ->middleware('role:kitchen');
 });
-
-// المطبخ
-Route::put('kitchen/orders/{order}/status', [OrderController::class, 'updateKitchenStatus'])
-    ->middleware('role:kitchen');
-
 
 // Owner
 Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
@@ -52,19 +53,7 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::get('/staff', [StaffController::class, 'index']);
     Route::post('/staff', [StaffController::class, 'store']);
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
-    // Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
-});
-
-
-Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
-Route::post('/auth/login', [AuthController::class, 'login'])
-    ->middleware('throttle:5,1');
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-
-    Route::post('/orders', [OrderController::class, 'store']);
+    Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
 });
 
 // Menu Items
@@ -75,4 +64,5 @@ Route::prefix('menu-items')->middleware(['auth:sanctum', 'role:owner'])->group(f
     Route::delete('/{menuItem}', [MenuItemController::class, 'destroy']);
 });
 
-require __DIR__.'/dashboard.php';
+
+require __DIR__ . '/dashboard.php';

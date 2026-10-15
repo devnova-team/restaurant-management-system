@@ -102,6 +102,19 @@ class OrderService
     //     // $this->orders->delete($order);
     // }
 
+      public function changeKitchenStatus(Order $order, mixed $status, Staff $staff): Order
+    {
+        $target = $status ?? (self::TRANSITIONS[$order->channel][$order->status][0] ?? null);
+
+        if (! in_array($target, ['preparing', 'ready'], true)) {
+            throw new UnprocessableEntityHttpException(
+                'المطبخ يستطيع تحويل الطلب إلى (قيد التحضير) أو (جاهز) فقط.'
+            );
+        }
+
+        return $this->changeStatus($order, $target, $staff);
+    }
+
     public function changeStatus(Order $order, string $newStatus, Staff $staff): Order
     {
         $current = $order->status;
