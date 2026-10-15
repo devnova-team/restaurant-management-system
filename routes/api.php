@@ -29,24 +29,22 @@ Route::prefix('public')->group(function () {
     });
 });
 
-
 Route::middleware('auth:sanctum')->group(function () {
-
+   
     // Order
     Route::get('orders', [OrderController::class, 'index']);
-    Route::get('orders/{id}', [OrderController::class, 'show']);
+    Route::get('orders/{order}', [OrderController::class, 'show']);
 
     Route::middleware('role:owner,cashier')->group(function () {
         Route::post('orders', [OrderController::class, 'store']);
-        Route::put('orders/{id}', [OrderController::class, 'update']);
-        Route::put('orders/{id}/final-status', [OrderController::class, 'updateFinalStatus']);
+        Route::put('orders/{order}', [OrderController::class, 'update']);
+        Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
     });
 
     // kitchen
-    Route::put('kitchen/orders/{id}/status', [OrderController::class, 'updateKitchenStatus'])
+    Route::put('kitchen/orders/{order}/status', [OrderController::class, 'updateKitchenStatus'])
         ->middleware('role:kitchen');
 });
-
 // Owner
 Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     // CRUD
