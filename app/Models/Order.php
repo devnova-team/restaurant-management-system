@@ -30,9 +30,6 @@ class Order extends Model
     {
         static::addGlobalScope(new TenantScope);
 
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class);
 
-    }
+}
 }
