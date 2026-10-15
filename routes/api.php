@@ -38,26 +38,25 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::post('/staff', [StaffController::class, 'store']);
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
+});
 
-    // Ingredients
-    Route::get('/ingredients', [IngredientController::class, 'index']);
-    Route::post('/ingredients', [IngredientController::class, 'store']);
-    Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show']);
-    Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
-    Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
-
-    // Recipe
-    Route::put('/menu-items/{menuItem}/recipe', [RecipeController::class, 'replace']);
+// Ingredients
+Route::prefix('ingredients')->middleware(['auth:sanctum', 'role:owner'])->group(function () {
+    Route::get('/', [IngredientController::class, 'index']);
+    Route::post('/', [IngredientController::class, 'store']);
+    Route::get('/{ingredient}', [IngredientController::class, 'show']);
+    Route::put('/{ingredient}', [IngredientController::class, 'update']);
+    Route::delete('/{ingredient}', [IngredientController::class, 'destroy']);
 });
 
 // Menu Items
-Route::prefix('menu-items')
-    ->middleware(['auth:sanctum', 'role:owner'])
-    ->group(function () {
+Route::prefix('menu-items')->middleware(['auth:sanctum', 'role:owner'])->group(function () {
         Route::get('/', [MenuItemController::class, 'index']);
         Route::post('/', [MenuItemController::class, 'store']);
         Route::put('/{menuItem}', [MenuItemController::class, 'update']);
         Route::delete('/{menuItem}', [MenuItemController::class, 'destroy']);
+        // Recipe
+        Route::put('/{menuItem}/recipe', [RecipeController::class, 'replace']);
     });
 
 require __DIR__.'/dashboard.php';
