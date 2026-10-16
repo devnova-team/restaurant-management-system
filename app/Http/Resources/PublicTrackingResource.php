@@ -11,12 +11,7 @@ class PublicTrackingResource extends JsonResource
     {
         return [
             'status' => $this->status,
-            'placed_at' => $this->created_at,
-            'items' => $this->orderItems->map(fn ($item): array => [
-                'name' => $item->menuItem->name,
-                'quantity' => $item->quantity,
-                'notes' => $item->notes,
-            ]),
+
         ];
     }
 }
