@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\IngredientController;
@@ -20,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('orders', OrderController::class);
 });
+
+
 
 Route::prefix('public')->group(function () {
     Route::get('/{restaurant}/menu', [PublicMenuController::class, 'index'])
@@ -59,4 +62,5 @@ Route::prefix('menu-items')->middleware(['auth:sanctum', 'role:owner'])->group(f
         Route::put('/{menuItem}/recipe', [RecipeController::class, 'replace']);
     });
 
-require __DIR__.'/dashboard.php';
+
+require __DIR__ . '/dashboard.php';
