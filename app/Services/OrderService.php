@@ -95,7 +95,6 @@ class OrderService
             return [
                 'menu_item_id' => $menuItem->id,
                 'quantity' => $row['quantity'],
-                'unit_price' => $menuItem->price,
                 'notes' => $row['notes'] ?? null,
             ];
         })->all();
