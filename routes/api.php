@@ -32,6 +32,9 @@ Route::prefix('public')->group(function () {
     Route::middleware('throttle:20,1')->group(function () {
         Route::post('/{restaurant}/orders', [PublicOrderController::class, 'store']);
     });
+    Route::get('/track/{order:tracking_token}', [PublicOrderController::class, 'track'])
+        ->middleware('throttle:60,1')
+        ->name('public.orders.track');
 });
 
 // Owner APIs
@@ -42,6 +45,9 @@ Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     Route::put('/staff/{staff}', [StaffController::class, 'update']);
     Route::delete('/staff/{staff}', [StaffController::class, 'destroy']);
 });
+
+
+require __DIR__.'/dashboard.php';
 
 // Ingredients
 Route::prefix('ingredients')->middleware(['auth:sanctum', 'role:owner'])->group(function () {
@@ -62,5 +68,5 @@ Route::prefix('menu-items')->middleware(['auth:sanctum', 'role:owner'])->group(f
         Route::put('/{menuItem}/recipe', [RecipeController::class, 'replace']);
     });
 
+require __DIR__.'/dashboard.php';
 
-require __DIR__ . '/dashboard.php';
