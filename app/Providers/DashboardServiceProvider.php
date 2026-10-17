@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\AnalyticsRepository;
 use App\Repositories\BillingStatsRepository;
+use App\Repositories\Interfaces\AnalyticsRepositoryInterface;
 use App\Repositories\Interfaces\BillingStatsRepositoryInterface;
 use App\Repositories\Interfaces\LowStockStatsRepositoryInterface;
 use App\Repositories\Interfaces\OrderStatsRepositoryInterface;
@@ -20,6 +22,7 @@ class DashboardServiceProvider extends ServiceProvider
         $this->app->bind(OrderStatsRepositoryInterface::class, OrderStatsRepository::class);
         $this->app->bind(BillingStatsRepositoryInterface::class,BillingStatsRepository::class);
         $this->app->bind(LowStockStatsRepositoryInterface::class,LowStockStatsRepository::class);
+        $this->app->bind(AnalyticsRepositoryInterface::class,AnalyticsRepository::class);
     }
 
     /**
