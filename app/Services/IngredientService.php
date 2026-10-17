@@ -6,15 +6,16 @@ use App\Models\Ingredient;
 use App\Models\MenuItem;
 use App\Models\Staff;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class IngredientService
 {
     /**
      * Create a new class instance.
      */
-    public function __construct()
-    {
-        //
+    public function __construct(
+        private StockAvailabilityService $stockAvailabilityService
+    ){
     }
 
     public function index(): Collection
@@ -36,9 +37,18 @@ class IngredientService
 
     public function update(Ingredient $ingredient, array $data): Ingredient
     {
-        $ingredient->update($data);
+        return DB::transaction(function () use ($ingredient, $data) {
+            $ingredient->update($data);
 
-        return $ingredient;
+            if (array_key_exists("quantity", $data)) {
+                $this->stockAvailabilityService->refreshAffectedMenuItemsAvailability(
+                    (int) $ingredient->restaurant_id,
+                    [(int) $ingredient->id]
+                );
+            }
+
+            return $ingredient->refresh();
+        });
     }
 
     public function destroy(Ingredient $ingredient): void

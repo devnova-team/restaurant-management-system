@@ -15,9 +15,9 @@ class StockOrderDeductionAndCostSnapshotService
     /**
      * Create a new class instance.
      */
-    public function __construct()
-    {
-        //
+    public function __construct(
+        private StockAvailabilityService $stockAvailabilityService
+    ){
     }
 
     public function deductForOrder(Order $order): array
@@ -172,6 +172,12 @@ class StockOrderDeductionAndCostSnapshotService
                 }
             }
 
+            // Refresh the availability status of affected menu items.
+            $this->stockAvailabilityService->refreshAffectedMenuItemsAvailability(
+                (int) $lockedOrder->restaurant_id,
+                array_map("intval", array_keys($requiredByIngredient))
+            );
+            
             // Record the usage and snapshot cost in the same transaction.
             $totalCost = 0.0;
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\MenuItem;
 use Illuminate\Support\Collection;
 
 class StockAvailabilityService
@@ -65,5 +66,31 @@ class StockAvailabilityService
                 : $maxQuantity,
             'ingredients' => $results,
         ];
+    }
+
+    public function refreshAffectedMenuItemsAvailability(
+        int $restaurantId,
+        array $ingredientIds
+    ): void {
+        $menuItems = MenuItem::query()
+            ->where("restaurant_id", $restaurantId)
+            ->whereHas("ingredients", function ($query) use ($ingredientIds) {
+                $query->whereIn("ingredients.id", $ingredientIds);
+            })
+            ->with("ingredients")
+            ->get();
+
+        foreach ($menuItems as $menuItem) {
+            $isAvailable = $menuItem->ingredients->isNotEmpty()
+                && $menuItem->ingredients->every(
+                    fn ($ingredient) =>
+                        (float) $ingredient->quantity
+                        >= (float) $ingredient->pivot->quantity_required
+                );
+
+            $menuItem->update([
+                "is_available" => $isAvailable,
+            ]);
+        }
     }
 }
