@@ -37,13 +37,13 @@ class AnalyticsRepository implements AnalyticsRepositoryInterface{
             // Calculate the total ingredient cost for each order item separately
             // to prevent duplicate rows when joining ingredient usage records.
         $costPerLine=OrderItemIngredientUsage::query()
-            ->select('order_item_id',DB::raw('SUM(quantity_used * cost_at_time_of_use)'))
+        ->select('order_item_id', DB::raw('SUM(quantity_used * cost_at_time_of_use) as line_cost'))
                 ->groupBy('order_item_id');
             return OrderItem::query()
                 ->whereHas('order',$this->orderFilter($from,$to,$statuses))
                         // Join menu items to retrieve each item's name and current price.
                 ->join('menu_items as m','m.id','=','order_items.menu_item_id')
-                ->leftJoinSub($costPerLine,'c.order_item_id','=','order_items.id')
+                ->leftJoinSub($costPerLine, 'c', 'c.order_item_id', '=', 'order_items.id')
                 ->groupBy('m.id','m.name')
                 ->selectRaw('
                 m.id as menu_item_id,
