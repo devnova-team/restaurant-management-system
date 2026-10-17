@@ -32,8 +32,5 @@ enum DeliveryStep: string
         };
     }
 
-    public static function total(): int
-    {
-        return count(self::cases());
-    }
+
 }
