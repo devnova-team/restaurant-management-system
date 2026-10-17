@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\IngredientController;
@@ -20,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('orders', OrderController::class);
 });
+
+
 
 Route::prefix('public')->group(function () {
     Route::get('/{restaurant}/menu', [PublicMenuController::class, 'index'])
