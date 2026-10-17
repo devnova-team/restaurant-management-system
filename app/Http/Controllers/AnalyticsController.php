@@ -6,7 +6,7 @@ use App\Http\Requests\Dashboard\AnalyticsRangeRequest;
 use App\Http\Resources\FoodCostResource;
 use App\Http\Resources\MenuProfitabilityResource;
 use App\Services\AnalyticsService;
-use app\Support\ApiResponse;
+use App\Support\ApiResponse;  
 use Illuminate\Http\JsonResponse;
 
 class AnalyticsController extends Controller
