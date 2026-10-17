@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
-    Route::apiResource('orders', OrderController::class);
+     Route::apiResource('orders', OrderController::class);
 });
 Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
@@ -30,21 +30,25 @@ Route::prefix('public')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-   
-    // Order
-    Route::get('orders', [OrderController::class, 'index']);
-    Route::get('orders/{order}', [OrderController::class, 'show']);
 
-    Route::middleware('role:owner')->group(function () {
+    // Order
+    Route::middleware('role:cashier')->group(function () {
+        Route::get('orders', [OrderController::class, 'index']);
         Route::post('orders', [OrderController::class, 'store']);
         Route::put('orders/{order}', [OrderController::class, 'update']);
         Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
     });
 
-    // kitchen
-    Route::put('kitchen/orders/{order}/status', [OrderController::class, 'updateKitchenStatus'])
-        ->middleware('role:kitchen');
+    Route::get('orders/{order}', [OrderController::class, 'show'])
+        ->middleware('role:owner');
+
+    // Kitchen
+    Route::middleware('role:kitchen')->group(function () {
+        Route::get('kitchen/orders', [OrderController::class, 'kitchenIndex']);
+        Route::put('kitchen/orders/{order}/status', [OrderController::class, 'updateKitchenStatus']);
+    });
 });
+
 // Owner
 Route::middleware(['auth:sanctum', 'role:owner'])->group(function () {
     // CRUD

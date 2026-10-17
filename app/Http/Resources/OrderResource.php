@@ -16,12 +16,12 @@ class OrderResource extends JsonResource
             'customer_name'    => $this->customer_name,
             'customer_phone'   => $this->customer_phone,
             'delivery_address' => $this->delivery_address,
+            'items'            => OrderItemResource::collection($this->whenLoaded('orderItems')),
             'total'            => $this->whenLoaded('orderItems', fn () => $this->calculateTotal()),
             'created_at'       => $this->created_at,
             'updated_at'       => $this->updated_at,
         ];
     }
-
 
     private function calculateTotal(): string
     {

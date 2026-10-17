@@ -2,16 +2,14 @@
 
 namespace App\Repositories\Eloquent;
 
-
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-
-
     public function create(array $data): Order
     {
         return Order::create($data);
@@ -21,7 +19,7 @@ class OrderRepository implements OrderRepositoryInterface
     {
         $now = now();
 
-        $rows = collect($items)->map(fn($item) => array_merge($item, [
+        $rows = collect($items)->map(fn ($item) => array_merge($item, [
             'order_id'   => $order->id,
             'created_at' => $now,
             'updated_at' => $now,
@@ -39,11 +37,20 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return Order::query()
             ->where('restaurant_id', $restaurantId)
-            ->when($filters['status'] ?? null, fn($q, $status) => $q->where('status', $status))
-            ->when($filters['channel'] ?? null, fn($q, $channel) => $q->where('channel', $channel))
+            ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->when($filters['channel'] ?? null, fn ($q, $channel) => $q->where('channel', $channel))
             ->with('orderItems.menuItem')
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 15));
+    }
+
+    public function activeForRestaurant(int $restaurantId, array $statuses): Collection
+    {
+        return Order::where('restaurant_id', $restaurantId)
+            ->whereIn('status', $statuses)
+            ->with('orderItems.menuItem')
+            ->oldest()
+            ->get();
     }
 
     public function findForRestaurant(int $id, int $restaurantId): Order
@@ -72,9 +79,8 @@ class OrderRepository implements OrderRepositoryInterface
         OrderItem::where('order_id', $order->id)->delete();
     }
 
-    // public function delete(Order $order): void
-    // {
-    //     $this->deleteItems($order);
-    //     $order->delete();
-    // }
+    public function updateInvoiceTotal(Order $order, string $total): void
+    {
+        $order->invoice?->forceFill(['total_amount' => $total])->save();
+    }
 }
