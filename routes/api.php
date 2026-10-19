@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\IngredientController;
-use App\Http\Controllers\Api\RecipeController;
+use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\RecipeController;
+use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Menu\MenuItemController;
 use App\Http\Controllers\Public\PublicMenuController;
 use App\Http\Controllers\Public\PublicOrderController;
@@ -37,6 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('orders', [OrderController::class, 'store']);
         Route::put('orders/{order}', [OrderController::class, 'update']);
         Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
+        Route::post('invoices', [InvoiceController::class, 'store']);
+        Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'storePayment']);
     });
 
     // Kitchen
@@ -71,4 +74,4 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-require __DIR__ . '/dashboard.php';
+require __DIR__.'/dashboard.php';
