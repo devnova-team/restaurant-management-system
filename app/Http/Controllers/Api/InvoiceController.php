@@ -28,9 +28,9 @@ class InvoiceController extends Controller
         );
     }
 
-    public function show(int $id): JsonResponse
+    public function show(int $invoice): JsonResponse
     {
-        $invoice = $this->invoiceService->getInvoice($id);
+        $invoice = $this->invoiceService->getInvoice($invoice);
 
         if (! $invoice) {
             return ApiResponse::error(
@@ -45,10 +45,10 @@ class InvoiceController extends Controller
         );
     }
 
-    public function pay(PayInvoiceRequest $request, int $id): JsonResponse
+    public function pay(PayInvoiceRequest $request, int $invoice): JsonResponse
     {
         $invoice = $this->invoiceService->payInvoice(
-            $id,
+            $invoice,
             (float) $request->validated('amount')
         );
 

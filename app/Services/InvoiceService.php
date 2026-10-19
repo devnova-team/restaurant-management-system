@@ -49,14 +49,14 @@ class InvoiceService
         });
     }
 
-    public function getInvoice(int $id): ?Invoice
+    public function getInvoice(int $invoice): ?Invoice
     {
-        return $this->invoiceRepository->findById($id);
+        return $this->invoiceRepository->findById($invoice);
     }
 
-    public function payInvoice(int $id, float $amount): Invoice
+    public function payInvoice(int $invoice, float $amount): Invoice
     {
-        $invoice = $this->invoiceRepository->findById($id);
+        $invoice = $this->invoiceRepository->findById($invoice);
 
         if (! $invoice) {
             throw ValidationException::withMessages([
