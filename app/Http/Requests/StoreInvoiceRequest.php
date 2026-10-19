@@ -18,7 +18,7 @@ class StoreInvoiceRequest extends FormRequest
             'order_id' => [
                 'required',
                 'integer',
-                'exists:orders,id',
+                Rule::exists('orders', 'id')->where('restaurant_id', $this->user()?->restaurant_id),
                 'unique:invoices,order_id',
             ],
 

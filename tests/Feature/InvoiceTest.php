@@ -68,6 +68,32 @@ test('cashier can create an invoice for an order', function () {
         ]);
 });
 
+test('cashier cannot create an invoice for an order from another restaurant', function () {
+    $this->actingAs($this->cashier);
+
+    $otherRestaurant = Restaurant::create([
+        'name' => 'Other Restaurant',
+        'owner_phone' => '0987654321',
+    ]);
+
+    $otherOrder = Order::create([
+        'restaurant_id' => $otherRestaurant->id,
+        'customer_name' => 'Other Customer',
+        'status' => 'received',
+        'channel' => 'dine_in',
+    ]);
+
+    $response = $this->postJson('/api/invoices', [
+        'order_id' => $otherOrder->id,
+        'payment_method' => 'cash',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJson([
+            'success' => false,
+        ]);
+});
+
 test('cashier can view an invoice', function () {
     $this->actingAs($this->cashier);
 
