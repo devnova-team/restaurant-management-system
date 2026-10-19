@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Kitchen
     Route::middleware('role:kitchen')->group(function () {
+        Route::get('kitchen/orders', [OrderController::class, 'kitchenIndex']);
         Route::put('kitchen/orders/{order}/status', [OrderController::class, 'updateKitchenStatus']);
     });
 
