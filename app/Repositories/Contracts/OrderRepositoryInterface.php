@@ -2,20 +2,20 @@
 
 namespace App\Repositories\Contracts;
 
-
 use App\Models\Order;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 interface OrderRepositoryInterface
 {
-
     public function create(array $data): Order;
     public function addItems(Order $order, array $items): void;
     public function findWithRelations(int $id): Order;
     public function paginateForRestaurant(int $restaurantId, array $filters = []): LengthAwarePaginator;
+    public function activeForRestaurant(int $restaurantId, array $statuses): Collection;
     public function findForRestaurant(int $id, int $restaurantId): Order;
     public function update(Order $order, array $data): Order;
     public function transitionStatus(Order $order, string $from, string $to): bool;
     public function deleteItems(Order $order): void;
-    // public function delete(Order $order): void;
+    public function updateInvoiceTotal(Order $order, string $total): void;
 }

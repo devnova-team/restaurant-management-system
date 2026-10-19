@@ -1,5 +1,5 @@
 <?php
-// app/Http/Requests/UpdateOrderStatusRequest.php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,24 +9,13 @@ class UpdateOrderStatusRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; 
+        return true;
     }
 
     public function rules(): array
     {
         return [
-            'status' => [
-                'required',
-                'string',
-                Rule::in([
-                    'received',
-                    'preparing',
-                    'ready',
-                    'served',
-                    'out_for_delivery',
-                    'delivered',
-                ]),
-            ],
+            'status' => ['required', 'string', Rule::in(['served', 'out_for_delivery', 'delivered'])],
         ];
     }
 
@@ -34,7 +23,7 @@ class UpdateOrderStatusRequest extends FormRequest
     {
         return [
             'status.required' => 'حالة الطلب مطلوبة.',
-            'status.in'       => 'حالة الطلب غير صحيحة.',
+            'status.in'       => 'الحالة النهائية يجب أن تكون: تم التقديم، خرج للتوصيل، أو تم التسليم.',
         ];
     }
 }
