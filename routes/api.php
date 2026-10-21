@@ -22,6 +22,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', OrderController::class);
 });
 
+// Order
+Route::middleware('role:cashier')->group(function () {
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::post('orders', [OrderController::class, 'store']);
+    Route::put('orders/{order}', [OrderController::class, 'update']);
+    Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
+});
+
+Route::get('orders/{order}', [OrderController::class, 'show'])
+    ->middleware('role:owner');
+
+// Kitchen
+Route::middleware('role:kitchen')->group(function () {
+    Route::get('kitchen/orders', [OrderController::class, 'kitchenIndex']);
+    Route::put('kitchen/orders/{order}/status', [OrderController::class, 'updateKitchenStatus']);
+});
 
 
 Route::prefix('public')->group(function () {

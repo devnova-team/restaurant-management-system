@@ -11,6 +11,7 @@ class KitchenOrderResource extends JsonResource
     {
         return [
             'id'         => $this->id,
+            'order_number' => $this->whenHas('daily_number', fn ($number) => (int) $number),
             'channel'    => $this->channel,
             'status'     => $this->status,
             'items'      => $this->orderItems->map(fn ($item) => [

@@ -11,6 +11,7 @@ class OrderResource extends JsonResource
     {
         return [
             'id'               => $this->id,
+            'order_number'     => $this->whenHas('daily_number', fn ($number) => (int) $number),
             'channel'          => $this->channel,
             'status'           => $this->status,
             'customer_name'    => $this->customer_name,
