@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGuestOrderRequest;
 use App\Http\Resources\GuestOrderCreatedResource;
+use App\Http\Resources\PublicTrackingResource;
+use App\Models\Order;
 use App\Models\Restaurant;
 use App\Services\GuestOrderService;
+use App\Services\PublicTrackingService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
 class PublicOrderController extends Controller
 {
-    public function __construct(private readonly GuestOrderService $service) {}
+    public function __construct(private readonly GuestOrderService $service,
+        private readonly PublicTrackingService $trackingService) {}
 
     public function store(StoreGuestOrderRequest $request, Restaurant $restaurant): JsonResponse
     {
@@ -22,6 +26,16 @@ class PublicOrderController extends Controller
             new GuestOrderCreatedResource($order),
             'تم استلام طلبك بنجاح',
             201
+        );
+    }
+
+    public function track(Order $order): JsonResponse
+    {
+        $order = $this->trackingService->getTrackableOrder($order);
+
+        return ApiResponse::success(
+            new PublicTrackingResource($order),
+            'تم جلب حالة الطلب'
         );
     }
 }

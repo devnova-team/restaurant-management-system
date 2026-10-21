@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = ['restaurant_id', 'customer_name', 'customer_phone', 'status','channel','delivery_address','tracking_token','created_by_staff_id'];
+    protected $fillable = ['restaurant_id', 'customer_name', 'customer_phone', 'status', 'channel', 'delivery_address', 'tracking_token', 'created_by_staff_id'];
 
     public function restaurant()
     {
@@ -24,9 +24,12 @@ class Order extends Model
         return $this->hasOne(Invoice::class);
     }
 
+
     // Scope to ensure that queries are filtered by the restaurant_id of the authenticated user
     protected static function booted()
     {
         static::addGlobalScope(new TenantScope);
-    }
+
+
+}
 }

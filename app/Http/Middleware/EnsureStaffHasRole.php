@@ -16,9 +16,9 @@ class EnsureStaffHasRole
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $userRole = $request->user()->role->value ;
-        if (!in_array($userRole, $roles)) {
-            throw new AuthorizationException();
+        $userRole = $request->user()->role->value;
+        if (! in_array($userRole, $roles)) {
+            throw new AuthorizationException;
         }
 
         return $next($request);
