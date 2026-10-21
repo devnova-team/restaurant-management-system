@@ -24,8 +24,8 @@ class UpdateStaffRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'string', 'max:255'],
-            'phone'=> ['sometimes', 'string', 'max:20'],
-            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:staff,email,' . $this->route('staff')],
+            'phone' => ['sometimes', 'string', 'max:20'],
+            'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:staff,email,'.$this->route('staff')],
             'password' => ['sometimes', 'string', 'min:8'],
             'role' => ['sometimes', 'string', 'in:kitchen,cashier'],
         ];

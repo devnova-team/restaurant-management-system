@@ -20,7 +20,7 @@ class Staff extends Authenticatable
         return [
             'password_hash' => 'hashed',
             'is_active' => 'boolean',
-            'role'=>StaffRole::class,
+            'role' => StaffRole::class,
         ];
     }
 
@@ -34,6 +34,4 @@ class Staff extends Authenticatable
     {
         static::addGlobalScope(new TenantScope);
     }
-
-
 }
