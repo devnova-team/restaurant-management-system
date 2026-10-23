@@ -63,7 +63,9 @@ class OrderService
 
     public function show(Order $order): Order
     {
-        return $order->load(['orderItems.menuItem', 'invoice']);
+        return $this->orders
+            ->findForRestaurant($order->id, $order->restaurant_id)
+            ->load('invoice');
     }
 
     public function create(Staff $staff, array $data): Order
@@ -96,7 +98,9 @@ class OrderService
             $this->orders->deleteItems($order);
             $this->orders->addItems($order, $this->formatItems($data['items']));
 
-            $order = $order->fresh(['orderItems.menuItem', 'invoice']);
+            $order = $this->orders
+                ->findForRestaurant($order->id, $order->restaurant_id)
+                ->load('invoice');
 
             // TODO (Moaz): $this->inventory->deductForOrder($order);
 

@@ -79,7 +79,10 @@ class OrderController extends Controller
             $request->user()
         );
 
-        return ApiResponse::success($this->resource($order), 'تم تحديث حالة الطلب بنجاح');
+        return ApiResponse::success(
+            (new KitchenOrderResource($order))->resolve(),
+            'تم تحديث حالة الطلب بنجاح'
+        );
     }
 
     public function updateFinalStatus(UpdateOrderStatusRequest $request, Order $order): JsonResponse
