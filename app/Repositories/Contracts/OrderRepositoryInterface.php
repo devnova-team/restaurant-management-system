@@ -18,4 +18,5 @@ interface OrderRepositoryInterface
     public function transitionStatus(Order $order, string $from, string $to): bool;
     public function deleteItems(Order $order): void;
     public function updateInvoiceTotal(Order $order, string $total): void;
+    public function lockOrderAndInvoiceStatuses(Order $order): array;
 }

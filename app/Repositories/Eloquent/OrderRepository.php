@@ -30,6 +30,7 @@ class OrderRepository implements OrderRepositoryInterface
         OrderItem::insert($rows);
     }
 
+
     public function findWithRelations(int $id): Order
     {
         return $this->withDailyNumber(Order::with('orderItems.menuItem'))->findOrFail($id);
@@ -41,7 +42,7 @@ class OrderRepository implements OrderRepositoryInterface
             ->where('restaurant_id', $restaurantId)
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->when($filters['channel'] ?? null, fn ($q, $channel) => $q->where('channel', $channel))
-            ->with('orderItems.menuItem')
+            ->with(['orderItems.menuItem', 'invoice'])
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 15));
     }
@@ -58,10 +59,11 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findForRestaurant(int $id, int $restaurantId): Order
     {
-        return $this->withDailyNumber(Order::with('orderItems.menuItem'))
+        return $this->withDailyNumber(Order::with(['orderItems.menuItem', 'invoice']))
             ->where('restaurant_id', $restaurantId)
             ->findOrFail($id);
     }
+
 
     public function update(Order $order, array $data): Order
     {
@@ -87,6 +89,17 @@ class OrderRepository implements OrderRepositoryInterface
         $order->invoice?->forceFill(['total_amount' => $total])->save();
     }
 
+
+    public function lockOrderAndInvoiceStatuses(Order $order): array
+    {
+        DB::table('orders')->where('id', $order->id)->lockForUpdate()->value('id');
+
+        return DB::table('invoices')
+            ->where('order_id', $order->id)
+            ->lockForUpdate()
+            ->pluck('payment_status')
+            ->all();
+    }
 
     private function withDailyNumber(Builder $query): Builder
     {

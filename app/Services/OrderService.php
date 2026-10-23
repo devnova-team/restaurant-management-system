@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use App\Support\OrderTotal;
 
 class OrderService
 {
@@ -47,7 +48,10 @@ class OrderService
 
     private const KITCHEN_STATUSES = ['received', 'preparing', 'ready'];
 
-    public function __construct(private OrderRepositoryInterface $orders) {}
+    public function __construct(
+        private OrderRepositoryInterface $orders,
+        private StockOrderDeductionAndCostSnapshotService $stockDeduction
+    ) {}
 
     public function list(array $filters, Staff $staff): LengthAwarePaginator
     {
@@ -63,9 +67,7 @@ class OrderService
 
     public function show(Order $order): Order
     {
-        return $this->orders
-            ->findForRestaurant($order->id, $order->restaurant_id)
-            ->load('invoice');
+        return $this->orders->findForRestaurant($order->id, $order->restaurant_id);
     }
 
     public function create(Staff $staff, array $data): Order
@@ -82,7 +84,7 @@ class OrderService
 
             $order = $this->orders->findForRestaurant($order->id, $staff->restaurant_id);
 
-            // TODO (Moaz): $this->inventory->deductForOrder($order);
+            $this->stockDeduction->deductForOrder($order);
 
             return $order;
         });
@@ -90,19 +92,15 @@ class OrderService
 
     public function update(Order $order, array $data): Order
     {
-        $this->assertPaymentNotRecorded($order);
-
         return DB::transaction(function () use ($order, $data) {
-            // TODO (Moaz): $this->inventory->restoreForOrder($order);  // يرجّع المخزون ويمسح usage rows القديمة
+            $this->assertNotLockedByPayment($order);
 
             $this->orders->deleteItems($order);
             $this->orders->addItems($order, $this->formatItems($data['items']));
 
-            $order = $this->orders
-                ->findForRestaurant($order->id, $order->restaurant_id)
-                ->load('invoice');
+            $order = $this->orders->findForRestaurant($order->id, $order->restaurant_id);
 
-            // TODO (Moaz): $this->inventory->deductForOrder($order);
+            $this->stockDeduction->deductForOrder($order);
 
             $this->syncUnpaidInvoiceTotal($order);
 
@@ -130,11 +128,9 @@ class OrderService
         return $this->orders->findForRestaurant($order->id, $staff->restaurant_id);
     }
 
-    private function assertPaymentNotRecorded(Order $order): void
+    private function assertNotLockedByPayment(Order $order): void
     {
-        $order->loadMissing('invoice');
-
-        if ($order->invoice?->payment_status === 'paid') {
+        if (in_array('paid', $this->orders->lockOrderAndInvoiceStatuses($order), true)) {
             throw new UnprocessableEntityHttpException('لا يمكن تعديل الطلب بعد تسجيل دفعة على فاتورته.');
         }
     }
@@ -142,23 +138,14 @@ class OrderService
     private function syncUnpaidInvoiceTotal(Order $order): void
     {
         if ($order->invoice?->payment_status === 'unpaid') {
-            $this->orders->updateInvoiceTotal($order, $this->calculateTotal($order));
+            $this->orders->updateInvoiceTotal($order, OrderTotal::items($order));
         }
-    }
-
-    private function calculateTotal(Order $order): string
-    {
-        $total = $order->orderItems->sum(
-            fn ($item) => $item->quantity * ($item->menuItem?->price ?? 0)
-        );
-
-        return number_format($total, 2, '.', '');
     }
 
     private function transitionError(Order $order, string $newStatus): string
     {
         if ($order->channel === 'dine_in' && in_array($newStatus, ['out_for_delivery', 'delivered'], true)) {
-            return 'الطلب Dine-in، القيمة المقبولة served بس.';
+            return 'الطلب Dine-in، القيمة المقبولة served بس';
         }
 
         $from = self::STATUS_LABELS[$order->status] ?? $order->status;
