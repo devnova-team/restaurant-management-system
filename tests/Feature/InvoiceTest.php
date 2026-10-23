@@ -164,7 +164,7 @@ test('cashier can pay an invoice with exact amount', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Invoice paid successfully.',
+            'message' => 'تم سداد الفاتورة بنجاح.',
             'data' => [
                 'id' => $invoice->id,
                 'payment_status' => 'paid',
@@ -214,6 +214,65 @@ test('cashier cannot pay an already paid invoice', function () {
         'total_amount' => 100,
         'payment_method' => 'cash',
         'payment_status' => 'paid',
+    ]);
+
+    $response = $this->postJson("/api/invoices/{$invoice->id}/pay", [
+        'amount' => 100.0,
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJson([
+            'success' => false,
+        ]);
+});
+
+test('cashier cannot view an invoice from another restaurant', function () {
+    $this->actingAs($this->cashier);
+
+    $otherRestaurant = Restaurant::create([
+        'name' => 'Other Restaurant',
+        'owner_phone' => '0987654321',
+    ]);
+
+    $otherOrder = Order::create([
+        'restaurant_id' => $otherRestaurant->id,
+        'customer_name' => 'Other Customer',
+        'status' => 'received',
+        'channel' => 'dine_in',
+    ]);
+
+    $invoice = Invoice::create([
+        'order_id' => $otherOrder->id,
+        'total_amount' => 100,
+        'payment_method' => 'cash',
+        'payment_status' => 'unpaid',
+    ]);
+
+    $response = $this->getJson("/api/invoices/{$invoice->id}");
+
+    $response->assertStatus(404);
+});
+
+test('cashier cannot pay an invoice from another restaurant', function () {
+    $this->actingAs($this->cashier);
+
+    $otherRestaurant = Restaurant::create([
+        'name' => 'Other Restaurant',
+        'owner_phone' => '0987654321',
+    ]);
+
+    $otherOrder = Order::create([
+        'restaurant_id' => $otherRestaurant->id,
+        'customer_name' => 'Other Customer',
+        'status' => 'received',
+        'channel' => 'dine_in',
+    ]);
+
+    $invoice = Invoice::create([
+        'order_id' => $otherOrder->id,
+        'total_amount' => 100,
+        'payment_method' => 'cash',
+        'payment_status' => 'unpaid',
     ]);
 
     $response = $this->postJson("/api/invoices/{$invoice->id}/pay", [

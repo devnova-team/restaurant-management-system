@@ -18,30 +18,31 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request): JsonResponse
     {
         $invoice = $this->invoiceService->createInvoice(
-            $request->validated()
+            $request->validated(),
+            $request->user()
         );
 
         return ApiResponse::success(
             $invoice,
-            'Invoice created successfully.',
+            'تم إنشاء الفاتورة بنجاح.',
             201
         );
     }
 
     public function show(int $invoice): JsonResponse
     {
-        $invoice = $this->invoiceService->getInvoice($invoice);
+        $invoice = $this->invoiceService->getInvoice($invoice, request()->user());
 
         if (! $invoice) {
             return ApiResponse::error(
-                'Invoice not found.',
+                'الفاتورة غير موجودة.',
                 404
             );
         }
 
         return ApiResponse::success(
             $invoice,
-            'Invoice retrieved successfully.'
+            'تم جلب الفاتورة بنجاح.'
         );
     }
 
@@ -49,12 +50,18 @@ class InvoiceController extends Controller
     {
         $invoice = $this->invoiceService->payInvoice(
             $invoice,
-            (float) $request->validated('amount')
+            (float) $request->validated('amount'),
+            $request->user()
         );
 
         return ApiResponse::success(
             $invoice,
-            'Invoice paid successfully.'
+            'تم سداد الفاتورة بنجاح.'
         );
+    }
+
+    public function storePayment(PayInvoiceRequest $request, int $invoice): JsonResponse
+    {
+        return $this->pay($request, $invoice);
     }
 }

@@ -10,6 +10,8 @@ interface InvoiceRepositoryInterface
 
     public function findById(int $id): ?Invoice;
 
+    public function findByIdForRestaurant(int $id, int $restaurantId, bool $lockForUpdate = false): ?Invoice;
+
     public function findByOrderId(int $orderId): ?Invoice;
 
     public function markAsPaid(Invoice $invoice): Invoice;
