@@ -20,6 +20,24 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         ])->find($id);
     }
 
+    public function findByIdForRestaurant(int $id, int $restaurantId, bool $lockForUpdate = false): ?Invoice
+    {
+        $query = Invoice::where('id', $id)
+            ->whereHas('order', function ($query) use ($restaurantId) {
+                $query->where('restaurant_id', $restaurantId);
+            })
+            ->with([
+                'order',
+                'order.orderItems.menuItem',
+            ]);
+
+        if ($lockForUpdate) {
+            $query->lockForUpdate();
+        }
+
+        return $query->first();
+    }
+
     public function findByOrderId(int $orderId): ?Invoice
     {
         return Invoice::where('order_id', $orderId)->first();
