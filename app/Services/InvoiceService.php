@@ -20,16 +20,13 @@ class InvoiceService
         protected InvoiceRepositoryInterface $invoiceRepository
     ) {}
 
-    public function createInvoice(array $data, ?Staff $staff = null): Invoice
+    public function createInvoice(array $data, Staff $staff): Invoice
     {
         return DB::transaction(function () use ($data, $staff) {
-            $orderQuery = Order::with('orderItems.menuItem');
-
-            if ($staff) {
-                $orderQuery->where('restaurant_id', $staff->restaurant_id);
-            }
-
-            $order = $orderQuery->lockForUpdate()->find($data['order_id']);
+            $order = Order::with('orderItems.menuItem')
+                ->where('restaurant_id', $staff->restaurant_id)
+                ->lockForUpdate()
+                ->find($data['order_id']);
 
             if (! $order) {
                 throw ValidationException::withMessages([
@@ -62,13 +59,9 @@ class InvoiceService
         });
     }
 
-    public function getInvoice(int $invoice, ?Staff $staff = null): ?Invoice
+    public function getInvoice(int $invoice, Staff $staff): ?Invoice
     {
-        if ($staff) {
-            return $this->invoiceRepository->findByIdForRestaurant($invoice, $staff->restaurant_id);
-        }
-
-        return $this->invoiceRepository->findById($invoice);
+        return $this->invoiceRepository->findByIdForRestaurant($invoice, $staff->restaurant_id);
     }
 
     public function payInvoice(int $invoice, float $amount, Staff $staff): Invoice

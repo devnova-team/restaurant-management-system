@@ -8,6 +8,7 @@ use App\Http\Requests\StoreInvoiceRequest;
 use App\Services\InvoiceService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
@@ -29,9 +30,9 @@ class InvoiceController extends Controller
         );
     }
 
-    public function show(int $invoice): JsonResponse
+    public function show(Request $request, int $invoice): JsonResponse
     {
-        $invoice = $this->invoiceService->getInvoice($invoice, request()->user());
+        $invoice = $this->invoiceService->getInvoice($invoice, $request->user());
 
         if (! $invoice) {
             return ApiResponse::error(
