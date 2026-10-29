@@ -164,7 +164,7 @@ test('cashier can pay an invoice with exact amount', function () {
     $response->assertStatus(200)
         ->assertJson([
             'success' => true,
-            'message' => 'Invoice paid successfully.',
+            'message' => 'تم سداد الفاتورة بنجاح.',
             'data' => [
                 'id' => $invoice->id,
                 'payment_status' => 'paid',
@@ -218,6 +218,177 @@ test('cashier cannot pay an already paid invoice', function () {
 
     $response = $this->postJson("/api/invoices/{$invoice->id}/pay", [
         'amount' => 100.0,
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJson([
+            'success' => false,
+        ]);
+});
+
+test('cashier cannot view an invoice from another restaurant', function () {
+    $this->actingAs($this->cashier);
+
+    $otherRestaurant = Restaurant::create([
+        'name' => 'Other Restaurant',
+        'owner_phone' => '0987654321',
+    ]);
+
+    $otherOrder = Order::create([
+        'restaurant_id' => $otherRestaurant->id,
+        'customer_name' => 'Other Customer',
+        'status' => 'received',
+        'channel' => 'dine_in',
+    ]);
+
+    $invoice = Invoice::create([
+        'order_id' => $otherOrder->id,
+        'total_amount' => 100,
+        'payment_method' => 'cash',
+        'payment_status' => 'unpaid',
+    ]);
+
+    $response = $this->getJson("/api/invoices/{$invoice->id}");
+
+    $response->assertStatus(404);
+});
+
+test('cashier cannot pay an invoice from another restaurant', function () {
+    $this->actingAs($this->cashier);
+
+    $otherRestaurant = Restaurant::create([
+        'name' => 'Other Restaurant',
+        'owner_phone' => '0987654321',
+    ]);
+
+    $otherOrder = Order::create([
+        'restaurant_id' => $otherRestaurant->id,
+        'customer_name' => 'Other Customer',
+        'status' => 'received',
+        'channel' => 'dine_in',
+    ]);
+
+    $invoice = Invoice::create([
+        'order_id' => $otherOrder->id,
+        'total_amount' => 100,
+        'payment_method' => 'cash',
+        'payment_status' => 'unpaid',
+    ]);
+
+    $response = $this->postJson("/api/invoices/{$invoice->id}/pay", [
+        'amount' => 100.0,
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJson([
+            'success' => false,
+        ]);
+});
+
+test('cashier cannot create a cod invoice for a dine_in order', function () {
+    $this->actingAs($this->cashier);
+
+    $order = Order::create([
+        'restaurant_id' => $this->restaurant->id,
+        'customer_name' => 'DineIn Customer',
+        'status' => 'received',
+        'channel' => 'dine_in',
+    ]);
+
+    $menuItem = MenuItem::create([
+        'restaurant_id' => $this->restaurant->id,
+        'name' => 'Pizza',
+        'category' => 'Food',
+        'price' => 70,
+        'is_available' => true,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'menu_item_id' => $menuItem->id,
+        'quantity' => 1,
+        'unit_price' => 70,
+    ]);
+
+    $response = $this->postJson('/api/invoices', [
+        'order_id' => $order->id,
+        'payment_method' => 'cod',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJson([
+            'success' => false,
+        ]);
+});
+
+test('cashier can create a cod invoice for a delivery order', function () {
+    $this->actingAs($this->cashier);
+
+    $order = Order::create([
+        'restaurant_id' => $this->restaurant->id,
+        'customer_name' => 'Delivery Customer',
+        'status' => 'received',
+        'channel' => 'delivery',
+    ]);
+
+    $menuItem = MenuItem::create([
+        'restaurant_id' => $this->restaurant->id,
+        'name' => 'Pasta',
+        'category' => 'Food',
+        'price' => 80,
+        'is_available' => true,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'menu_item_id' => $menuItem->id,
+        'quantity' => 1,
+        'unit_price' => 80,
+    ]);
+
+    $response = $this->postJson('/api/invoices', [
+        'order_id' => $order->id,
+        'payment_method' => 'cod',
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'success' => true,
+            'data' => [
+                'order_id' => $order->id,
+                'payment_method' => 'cod',
+            ],
+        ]);
+});
+
+test('cashier cannot create a cash invoice for a delivery order', function () {
+    $this->actingAs($this->cashier);
+
+    $order = Order::create([
+        'restaurant_id' => $this->restaurant->id,
+        'customer_name' => 'Delivery Customer',
+        'status' => 'received',
+        'channel' => 'delivery',
+    ]);
+
+    $menuItem = MenuItem::create([
+        'restaurant_id' => $this->restaurant->id,
+        'name' => 'Pasta',
+        'category' => 'Food',
+        'price' => 80,
+        'is_available' => true,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'menu_item_id' => $menuItem->id,
+        'quantity' => 1,
+        'unit_price' => 80,
+    ]);
+
+    $response = $this->postJson('/api/invoices', [
+        'order_id' => $order->id,
+        'payment_method' => 'cash',
     ]);
 
     $response->assertStatus(422)

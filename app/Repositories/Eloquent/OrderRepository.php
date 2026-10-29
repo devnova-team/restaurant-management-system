@@ -6,7 +6,9 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -28,25 +30,27 @@ class OrderRepository implements OrderRepositoryInterface
         OrderItem::insert($rows);
     }
 
+
     public function findWithRelations(int $id): Order
     {
-        return Order::with('orderItems.menuItem')->findOrFail($id);
+        return $this->withDailyNumber(Order::with('orderItems.menuItem'))->findOrFail($id);
     }
 
     public function paginateForRestaurant(int $restaurantId, array $filters = []): LengthAwarePaginator
     {
-        return Order::query()
+        return $this->withDailyNumber(Order::query())
             ->where('restaurant_id', $restaurantId)
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->when($filters['channel'] ?? null, fn ($q, $channel) => $q->where('channel', $channel))
-            ->with('orderItems.menuItem')
+            ->with(['orderItems.menuItem', 'invoice'])
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 15));
     }
 
     public function activeForRestaurant(int $restaurantId, array $statuses): Collection
     {
-        return Order::where('restaurant_id', $restaurantId)
+        return $this->withDailyNumber(Order::query())
+            ->where('restaurant_id', $restaurantId)
             ->whereIn('status', $statuses)
             ->with('orderItems.menuItem')
             ->oldest()
@@ -55,10 +59,11 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findForRestaurant(int $id, int $restaurantId): Order
     {
-        return Order::with('orderItems.menuItem')
+        return $this->withDailyNumber(Order::with(['orderItems.menuItem', 'invoice']))
             ->where('restaurant_id', $restaurantId)
             ->findOrFail($id);
     }
+
 
     public function update(Order $order, array $data): Order
     {
@@ -82,5 +87,28 @@ class OrderRepository implements OrderRepositoryInterface
     public function updateInvoiceTotal(Order $order, string $total): void
     {
         $order->invoice?->forceFill(['total_amount' => $total])->save();
+    }
+
+
+    public function lockOrderAndInvoiceStatuses(Order $order): array
+    {
+        DB::table('orders')->where('id', $order->id)->lockForUpdate()->value('id');
+
+        return DB::table('invoices')
+            ->where('order_id', $order->id)
+            ->lockForUpdate()
+            ->pluck('payment_status')
+            ->all();
+    }
+
+    private function withDailyNumber(Builder $query): Builder
+    {
+        $position = DB::table('orders as same_day')
+            ->selectRaw('count(*)')
+            ->whereColumn('same_day.restaurant_id', 'orders.restaurant_id')
+            ->whereColumn('same_day.id', '<=', 'orders.id')
+            ->whereRaw('DATE(same_day.created_at) = DATE(orders.created_at)');
+
+        return $query->select('orders.*')->addSelect(['daily_number' => $position]);
     }
 }

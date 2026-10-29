@@ -39,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('orders/{order}', [OrderController::class, 'update']);
         Route::put('orders/{order}/final-status', [OrderController::class, 'updateFinalStatus']);
         Route::post('invoices', [InvoiceController::class, 'store']);
+        Route::get('invoices/{invoice}', [InvoiceController::class, 'show']);
+        Route::post('invoices/{invoice}/pay', [InvoiceController::class, 'pay']);
         Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'storePayment']);
     });
 

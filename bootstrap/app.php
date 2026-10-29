@@ -33,7 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Handle authentication exceptions for API routes
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('غير مصرح، من فضلك سجّل الدخول', 401);
+                $message = ($e->getMessage() && $e->getMessage() !== 'Unauthenticated.')
+                    ? $e->getMessage()
+                    : 'غير مصرح، من فضلك سجّل الدخول';
+
+                return ApiResponse::error($message, 401);
             }
         });
 
