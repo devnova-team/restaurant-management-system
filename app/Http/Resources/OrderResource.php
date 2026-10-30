@@ -26,10 +26,14 @@ class OrderResource extends JsonResource
 
     private function calculateTotal(): string
     {
-        $total = $this->orderItems->sum(
-            fn ($item) => $item->quantity * ($item->menuItem?->price ?? 0)
+        if ($this->relationLoaded('invoice') && $this->invoice) {
+            return number_format((float) $this->invoice->total_amount, 2, '.', '');
+        }
+
+        $cents = $this->orderItems->sum(
+            fn ($item) => (int) round((float) ($item->menuItem?->price ?? 0) * 100) * (int) $item->quantity
         );
 
-        return number_format($total, 2, '.', '');
+        return number_format($cents / 100, 2, '.', '');
     }
 }
