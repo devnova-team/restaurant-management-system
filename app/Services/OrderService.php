@@ -50,7 +50,8 @@ class OrderService
 
     public function __construct(
         private OrderRepositoryInterface $orders,
-        private StockOrderDeductionAndCostSnapshotService $stockDeduction
+        private StockOrderDeductionAndCostSnapshotService $stockDeduction,
+        private StockOrderRestoreService $stockRestore
     ) {}
 
     public function list(array $filters, Staff $staff): LengthAwarePaginator
@@ -94,6 +95,8 @@ class OrderService
     {
         return DB::transaction(function () use ($order, $data) {
             $this->assertNotLockedByPayment($order);
+
+            $this->stockRestore->restoreForOrder($order);
 
             $this->orders->deleteItems($order);
             $this->orders->addItems($order, $this->formatItems($data['items']));
